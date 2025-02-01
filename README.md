@@ -1,1 +1,1 @@
-# Vision Edge AI
+# GenAI Edge AI
