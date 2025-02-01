@@ -1,0 +1,395 @@
+{% extends "bootstrap/base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block title %}GenAI Edge AI{% endblock %}
+
+{% block head %}
+  {{ super() }}
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/css/bootstrap-datetimepicker.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.css" rel="stylesheet">
+    <script src="https://unpkg.com/@turf/turf@6.2.0-alpha.1/dist/turf.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+{% endblock %}
+
+
+{% block content %}
+
+  {% include 'ui_layout.html' %}
+
+{% endblock %}
+
+{% block scripts %}
+    {{ super() }}
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/js/bootstrap-datetimepicker.min.js"></script>
+    <script src="https://jqwidgets.com/public/jqwidgets/jqxcore.js"></script>
+    <script src="https://jqwidgets.com/public/jqwidgets/jqxdraw.js"></script>
+    <script src="https://jqwidgets.com/public/jqwidgets/jqxgauge.js"></script>
+    <script>
+
+
+        const currentStateList = [];
+
+        function initializeGauge(selector, config = {}) {
+            const defaultColors = ['#4CAF50', '#FFC107', '#F44336'];
+            const ranges = (config.ranges || []).slice(0, 3).map(([startValue, endValue], index) => ({
+                  startValue,
+                  endValue,
+                  style: { fill: defaultColors[index], stroke: defaultColors[index] },
+                  endWidth: 5,
+                  startWidth: 5
+            }));
+
+            const min = ranges.length > 0 ? Math.min(...ranges.map(range => range.startValue)) : 0;
+            const max = ranges.length > 0 ? Math.max(...ranges.map(range => range.endValue)) : 100;
+
+            $(selector).jqxGauge({
+                  animationDuration: 500,
+                  width: config.width || 80,
+                  height: config.height || 80,
+                  colorScheme: 'scheme05',
+                  showRanges: ranges.length > 0,
+                  labels: { visible: config.hasPointer || false },
+                  ticksMinor: { visible: config.hasPointer || false, interval: 5, size: '5%' },
+                  ticksMajor: { visible: config.hasPointer || false, interval: 10, size: '9%' },
+                  pointer: { visible: config.hasPointer || false },
+                  cap: { visible: config.hasPointer || false },
+                  caption: {
+                          value: '',
+                          position: config.position || 'bottom',
+                          offset: config.offset || [0, 0],
+                          visible: true,
+                          font: { size: config.fontSize || 10, weight: 'bold' }
+                  },
+                  min,
+                  max,
+                  value: config.value || 0,
+                  ranges: ranges
+                });
+            }
+
+        function startchatbot(chatbotId) {
+            console.log(`Starting chatbot: ${chatbotId}`);
+
+            $.ajax({
+                url: `/start_chatbot`,
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({ chatbot_id: chatbotId }),
+                success: () => {
+                    console.log(`chatbot ${chatbotId} started`);
+                },
+                error: (xhr) => {
+                    if (xhr.status === 403) {
+                        const response = JSON.parse(xhr.responseText);
+                        alert(`Access denied for ${chatbotId}. Retry in ${response.remaining_time} seconds.`);
+                    } else {
+                        console.error(`Failed to start ${chatbotId}:`, xhr.responseText || xhr.statusText);
+                    }
+                }
+            });
+        }
+
+        function startchatbot(chatbotId, animate = false) {
+            const chatbotState = currentStateList.find(state => state.chatbot_id === chatbotId);
+            const chatbotElement = chatbotState.selector;
+
+            if (chatbotState.running) {
+                console.log(`chatbot ${chatbotId} is already running.`);
+                return;
+            }
+
+            console.log(`Starting chatbot: ${chatbotId}`);
+
+
+            $.ajax({
+                url: `/start_chatbot`,
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(chatbotState),
+                success: () => {
+                    console.log(`chatbot ${chatbotId} started`);
+                    chatbotState.running = true;
+                },
+                error: (xhr) => {
+                    if (xhr.status === 403) {
+                        const response = JSON.parse(xhr.responseText);
+                        alert(`Access denied for ${chatbotId}. Retry in ${response.remaining_time} seconds.`);
+                    } else {
+                        console.error(`Failed to start ${chatbotId}:`, xhr.responseText || xhr.statusText);
+                    }
+                }
+            });
+
+            ['model','device','precision'].forEach(item => { updateDropdownSelection(chatbotId, item) });
+           
+        }
+
+        function stopchatbot(chatbotId,  animate =  false) {
+            const chatbotState = currentStateList.find(state => state.chatbot_id === chatbotId);
+            const chatbotElement = chatbotState.selector;
+
+            if (!chatbotState.running) {
+                console.log(`chatbot ${chatbotId} is not running.`);
+                return;
+            }
+            
+            console.log(`Stopping chatbot: ${chatbotId}`);
+
+            $.ajax({
+                url: `/stop_chatbot`,
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({ chatbot_id: chatbotId }),
+                success: () => {
+                    chatbotState.running = false;
+                    console.log(`${chatbotId} stopped successfully.`)
+                },
+                error: (xhr, status, error) => console.error(`Failed to stop ${chatbotId}:`, { status, error, response: xhr.responseText }),
+            });
+
+            animatechatbot(chatbotId, false, animate);
+        }
+
+        function updatechatbot(chatbotId, type, value, animate = false) {
+            const chatbotState = currentStateList.find(state => state.chatbot_id === chatbotId);
+            if (!chatbotState.running) {
+                console.log(`chatbot ${chatbotId} is not running.`);
+                return;
+            }
+
+            console.log(`Updating chatbot: ${chatbotId}`);
+
+            if (chatbotState[type] !== value) {
+                chatbotState[type] = value;
+
+                animatechatbot(chatbotId, false, animate);                                
+
+               $.ajax({
+                    url: `/update_chatbot`,
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify(chatbotState),
+                    success: () => {
+                        updateDropdownSelection(chatbotId, type)
+                        animatechatbot(chatbotId, true, animate);                             
+                    },
+                    error: () => console.error(`Failed to update ${chatbotId}`),
+                });
+            }
+        }
+
+        function animatechatbot(chatbotId, show = true, animate = false) {
+            const chatbotState = currentStateList.find(state => state.chatbot_id === chatbotId);
+            if (!chatbotState) {
+                console.error(`chatbot state not found for ID: ${chatbotId}`);
+                return;
+            }
+
+            const chatbotElement = chatbotState.selector;
+
+            if (show) {
+                chatbotElement.show();
+                if (animate) {
+                    console.log(`Animating chatbot ${chatbotId} to show.`);
+                    chatbotElement.removeClass('fade-out').addClass('fade-in'); // Apply fade-in class
+                }
+            } 
+            else {
+                if (animate) {
+                    console.log(`Animating chatbot ${chatbotId} to hide.`);
+                    chatbotElement.removeClass('fade-in').addClass('fade-out'); // Apply fade-out class
+                }
+                else {
+                    chatbotElement.hide();
+                }
+            }
+        }
+
+        function clonechatbots() {
+            const chatbotTypes = ['cpu', 'gpu', 'npu'];
+            const chatbotTemplate = $('#chatbot');
+
+            chatbotTypes.forEach(type => {
+                const clonedchatbot = chatbotTemplate.clone(true).attr('id', type).hide();
+
+                // Update IDs and attributes for the cloned chatbot
+                clonedchatbot.find('#fpsGauge').attr('id', `fpsGauge-${type}`);
+                clonedchatbot.find('#latencyGauge').attr('id', `latencyGauge-${type}`);
+                clonedchatbot.find('#modelDropdown').attr('id', `modelDropdown-${type}`);
+                clonedchatbot.find('#deviceDropdown').attr('id', `deviceDropdown-${type}`);
+                clonedchatbot.find('#precisionDropdown').attr('id', `precisionDropdown-${type}`);
+
+                // Append the cloned chatbot to the chatbots container
+                $('#chatbots').append(clonedchatbot);
+
+                currentStateList.push({
+                    chatbot_id: type,
+                    model: '{{ default_model }}',
+                    device: type.toUpperCase(),
+                    precision: '{{ default_precision }}',
+                    running: false,
+                    selector: $(`#${type}`),
+                    source_height: 0
+                });
+            });
+        }
+
+        function updateDropdownSelection(chatbotId, type) {
+            const chatbotState = currentStateList.find(state => state.chatbot_id === chatbotId);
+            if (!chatbotState) {
+                console.error(`chatbot state not found for: ${chatbotId}`);
+                return;
+            }
+
+            const currentValue = chatbotState[type];
+
+            if (currentValue) {
+                // Reset visibility for all options in the current dropdown
+                $(`#${type}Dropdown-${chatbotId} + .dropdown-menu .dropdown-item`).show();
+
+                // Hide the selected option for the current chatbot
+                $(`#${type}Dropdown-${chatbotId} + .dropdown-menu .dropdown-item[data-${type}="${currentValue}"]`).hide();
+
+                // Update the dropdown button text to reflect the current value
+                $(`#${type}Dropdown-${chatbotId}`).text(currentValue);
+
+                // Multi-device handling: Hide the selected option across other chatbots
+                if (type == 'device' && isMultipleDevices()) {
+                    currentStateList.forEach(state => {
+                        $(`#${type}Dropdown-${state.chatbot_id} + .dropdown-menu .dropdown-item[data-${type}="${currentValue}"]`).hide();
+                        if (chatbotId==state.chatbot_id) {
+                            currentStateList.filter(s => s.running).forEach(runningState => {
+                                $(`#${type}Dropdown-${chatbotId} + .dropdown-menu .dropdown-item[data-${type}="${runningState[type]}"]`).hide();
+                            });
+                        }
+                    });
+                }
+            }
+        }
+
+        function initialCaptionConfigs(chatbotId) {
+            return {
+                    cpu: $("#cpuGauge").jqxGauge('caption'),
+                    power: $("#powerGauge").jqxGauge('caption'),
+                    fps: $(`#fpsGauge-${chatbotId}`).jqxGauge('caption'),
+                    latency: $(`#latencyGauge-${chatbotId}`).jqxGauge('caption'),
+                };
+        }
+
+        function updateGaugeCaption(id, value, initialCaptionConfig) {
+            const validValue = (typeof value === 'number' && !isNaN(value)) ? value : 0;
+            const updatedCaptionConfig = {
+                ...initialCaptionConfig,
+                value: validValue ? `${validValue}` : ``
+            };
+            $(id).jqxGauge({ caption: updatedCaptionConfig });
+            $(id).jqxGauge('value', validValue);
+        }
+
+        function initGauges() {
+            const chatbotTypes = ['cpu', 'gpu', 'npu'];
+
+            initializeGauge('#cpuGauge', { width: 140, height: 140, hasPointer: true, offset: [0,5], ranges: [[0, 50], [50, 80], [80, 100]] });
+            initializeGauge('#powerGauge', { width: 140, height: 140, hasPointer: true,  offset: [0,5], ranges: [[0, 20], [20, 40], [40, 60]] });
+
+            chatbotTypes.forEach(type => {
+                initializeGauge(`#fpsGauge-${type}`, { width: 80, height: 80, hasPointer: false, position: "top", ranges: [] });
+                initializeGauge(`#latencyGauge-${type}`, { width: 80, height: 80, hasPointer: false, position: "top", ranges: [] });
+            });
+        }
+
+        function updateGauges() {
+            $.ajax({
+                url: "/get_metrics",
+                method: "GET",
+                success: function (data) {
+                    // Update overall CPU and Power metrics
+                    const cpuPercent = data.cpu_percent ?? 0;
+                    const powerData = data.power_data ?? 0;
+
+                    updateGaugeCaption("#cpuGauge", cpuPercent,  initialCaptionConfigs('cpu').cpu);
+                    updateGaugeCaption("#powerGauge", powerData, initialCaptionConfigs('cpu').power);
+
+                    // Update gauges for each running chatbot
+                    if (data.chatbots) {
+                        Object.keys(data.chatbots).forEach(chatbotId => {
+                            const chatbotMetrics = data.chatbots[chatbotId];
+                            if (chatbotMetrics) {
+                                const fps = Math.round(chatbotMetrics.fps ?? 0);
+                                const latency = Math.round(chatbotMetrics.latency ?? 0);
+                                updateGaugeCaption(`#fpsGauge-${chatbotId}`, fps, initialCaptionConfigs(chatbotId).fps);
+                                updateGaugeCaption(`#latencyGauge-${chatbotId}`, latency, initialCaptionConfigs(chatbotId).latency);
+                            }
+                        });
+                    }
+                },
+                error: function () {
+                    console.error("Failed to fetch metrics data");
+                }
+            });
+        }
+
+
+        function isMultipleDevices() {
+            return $('#multiDeviceToggle').text().trim() == "Single Device";
+        }
+
+        $('.dropdown-menu').on('click', '.dropdown-item', function () {
+            const type = $(this).closest('.dropdown-menu').data('type'); 
+            const value = $(this).data(type); // Selected value from the dropdown
+            const chatbotId = $(this).closest('.chatbot').attr('id');
+
+            if (type === 'device') {
+                const newchatbotId = value.toLowerCase()
+                updateDropdownSelection(newchatbotId, type);
+
+                if (isMultipleDevices()) {
+                    startchatbot(newchatbotId);
+                } else {
+                    stopchatbot(chatbotId);
+                    startchatbot(newchatbotId);
+                }
+            } else {
+                updatechatbot(chatbotId, type, value);
+            }
+        });
+
+        $('#multiDeviceToggle').on('click', function () {
+            $(this).text(isMultipleDevices() ? "Multiple Devices" : "Single Device");
+            $(this).toggleClass('active'); 
+            if (!isMultipleDevices()) {
+                currentStateList.forEach((state, index) => {
+                    updateDropdownSelection(state.chatbot_id, 'device', false)
+                    if (index != 0) {
+                        stopchatbot(state.chatbot_id, false);
+                    }
+               });
+            } 
+        });
+
+
+        $(document).ready(function () {
+
+            // Clone chatbots for each device type
+            clonechatbots();
+
+            initGauges();
+
+            // Initialize default chatbot
+            default_chatbot = '{{default_device}}'.toLowerCase();
+            startchatbot(default_chatbot);
+
+            // Periodically update gauges
+            setInterval(updateGauges, 1000);
+
+        });
+
+       
+
+    </script>
+
+{% endblock %}
+

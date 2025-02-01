@@ -1,0 +1,106 @@
+<!-- Main Container -->
+<div class="container d-flex flex-column align-items-center">
+    <!-- Main Header Section -->
+    <div id="sys-container" class="d-flex align-items-center justify-content-between w-100">
+        <!-- CPU Gauge on the left -->
+        <div id="cpuGaugeContainer" class="d-flex flex-column align-items-center">
+            <div id="cpuGauge" class="gauge"></div>
+            <div class="gauge-label">CPU Usage (%)</div>
+        </div>
+
+        <div id="titleContainer">
+            <h1 id="title">GenAI Edge AI</h1>
+            <div id="platformName">{{ platform_name }}</div>
+        </div>
+
+        <!-- Power Gauge on the right -->
+        <div id="powerGaugeContainer" class="d-flex flex-column align-items-center">
+            <div id="powerGauge" class="gauge"></div>
+            <div class="gauge-label">Power Use (W)</div>
+        </div>
+    </div>
+
+    <div id="chatbots-container" class="d-flex flex-column align-items-center">
+        <div class="chatbots-wrapper d-flex flex-column align-items-center">
+
+            <hr class="separator">
+
+            <div id="chatbots">
+                <div class="chatbot" id="chatbot" style="display: none;">
+                    <div id="chatbot-container" class="d-flex align-items-center justify-content-center mt-3">
+
+                        <div class="chat-message bot-message">Hi there </div>
+
+                        <!-- FPS Gauge -->
+                        <div class="gauge-container fps-container">
+                            <div id="fpsGauge" class="gauge"></div>
+                            <div class="gauge-label fps-label">FPS</div>
+                        </div>
+
+                        <!-- Latency Gauge -->
+                        <div class="gauge-container latency-container">
+                            <div id="latencyGauge" class="gauge"></div>
+                            <div class="gauge-label latency-label">Latency</div>
+                        </div>
+                    </div>
+
+                    <!-- Control Section -->
+                    <div id="control" class="mt-3">
+                        <!-- Dropdowns for models, devices, and precision -->
+
+                        <div class="dropdown">
+                            <button class="custom-button btn btn-secondary dropdown-toggle" type="button" id="modelDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                {{ default_model }}
+                            </button>
+                            <div class="dropdown-menu" aria-labelledby="modelDropdown" data-type="model">
+                                {% for model in models %}
+                                    <a class="dropdown-item model-option"  data-model="{{ model_name }}">{{ model }}</a>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <div class="dropdown">
+                            <button class="custom-button btn btn-secondary dropdown-toggle" type="button" id="deviceDropdown" class="deviceDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                {{ default_device }}
+                            </button>
+                            <div class="dropdown-menu" aria-labelledby="deviceDropdown" data-type="device">
+                                 {% for device in devices %}
+                                    <a class="dropdown-item device-option"  data-device="{{ device }}">{{ device }}</a>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <div class="dropdown">
+                            <button class="custom-button btn btn-secondary dropdown-toggle" type="button" id="precisionDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                {{ default_precision }}
+                            </button>
+                            <div class="dropdown-menu" aria-labelledby="precisionDropdown" data-type="precision">
+                                <a class="dropdown-item precision-option" data-precision="FP32">FP32</a>
+                                <a class="dropdown-item precision-option" data-precision="FP16">FP16</a>
+                                <a class="dropdown-item precision-option" data-precision="INT8">INT8</a>
+                            </div>
+                        </div>
+
+                </div>
+            </div>
+            
+            <hr class="separator">
+        
+        </div>
+    </div>
+
+    <div class="control" id="control" class="mt-3">
+
+        <div class="d-flex align-items-center justify-content-center mt-4">
+            <button id="multiDeviceToggle" class="custom-button btn btn-primary">
+                Multiple Devices
+            </button>
+        </div>
+
+    </div>
+
+
+    <div class="chat-message user-message">Hello</div>
+
+
+</div>
