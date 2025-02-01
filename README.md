@@ -1,1 +1,1 @@
-# GenAI Edge AI
+# Gen Edge AI
