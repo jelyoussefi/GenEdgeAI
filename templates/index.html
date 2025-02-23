@@ -13,11 +13,8 @@
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
 {% endblock %}
 
-
 {% block content %}
-
   {% include 'ui_layout.html' %}
-
 {% endblock %}
 
 {% block scripts %}
@@ -28,8 +25,6 @@
     <script src="https://jqwidgets.com/public/jqwidgets/jqxdraw.js"></script>
     <script src="https://jqwidgets.com/public/jqwidgets/jqxgauge.js"></script>
     <script>
-
-
         const currentStateList = [];
 
         function initializeGauge(selector, config = {}) {
@@ -67,32 +62,10 @@
                   max,
                   value: config.value || 0,
                   ranges: ranges
-                });
-            }
-
-        function startchatbot(chatbotId) {
-            console.log(`Starting chatbot: ${chatbotId}`);
-
-            $.ajax({
-                url: `/start_chatbot`,
-                type: 'POST',
-                contentType: 'application/json',
-                data: JSON.stringify({ chatbot_id: chatbotId }),
-                success: () => {
-                    console.log(`chatbot ${chatbotId} started`);
-                },
-                error: (xhr) => {
-                    if (xhr.status === 403) {
-                        const response = JSON.parse(xhr.responseText);
-                        alert(`Access denied for ${chatbotId}. Retry in ${response.remaining_time} seconds.`);
-                    } else {
-                        console.error(`Failed to start ${chatbotId}:`, xhr.responseText || xhr.statusText);
-                    }
-                }
             });
         }
 
-        function startchatbot(chatbotId, animate = false) {
+        function startChatbot(chatbotId, animate = false) {
             const chatbotState = currentStateList.find(state => state.chatbot_id === chatbotId);
             const chatbotElement = chatbotState.selector;
 
@@ -102,7 +75,6 @@
             }
 
             console.log(`Starting chatbot: ${chatbotId}`);
-
 
             $.ajax({
                 url: `/start_chatbot`,
@@ -123,11 +95,10 @@
                 }
             });
 
-            ['model','device','precision'].forEach(item => { updateDropdownSelection(chatbotId, item) });
-           
+            ['model', 'device', 'precision'].forEach(item => updateDropdownSelection(chatbotId, item));
         }
 
-        function stopchatbot(chatbotId,  animate =  false) {
+        function stopChatbot(chatbotId, animate = false) {
             const chatbotState = currentStateList.find(state => state.chatbot_id === chatbotId);
             const chatbotElement = chatbotState.selector;
 
@@ -145,15 +116,15 @@
                 data: JSON.stringify({ chatbot_id: chatbotId }),
                 success: () => {
                     chatbotState.running = false;
-                    console.log(`${chatbotId} stopped successfully.`)
+                    console.log(`${chatbotId} stopped successfully.`);
                 },
-                error: (xhr, status, error) => console.error(`Failed to stop ${chatbotId}:`, { status, error, response: xhr.responseText }),
+                error: (xhr, status, error) => console.error(`Failed to stop ${chatbotId}:`, { status, error, response: xhr.responseText })
             });
 
-            animatechatbot(chatbotId, false, animate);
+            animateChatbot(chatbotId, false, animate);
         }
 
-        function updatechatbot(chatbotId, type, value, animate = false) {
+        function updateChatbot(chatbotId, type, value, animate = false) {
             const chatbotState = currentStateList.find(state => state.chatbot_id === chatbotId);
             if (!chatbotState.running) {
                 console.log(`chatbot ${chatbotId} is not running.`);
@@ -164,24 +135,24 @@
 
             if (chatbotState[type] !== value) {
                 chatbotState[type] = value;
+                animateChatbot(chatbotId, false, animate);
 
-                animatechatbot(chatbotId, false, animate);                                
-
-               $.ajax({
-                    url: `/update_chatbot`,
+                const url = type === 'precision' ? '/set_precision' : '/start_chatbot';
+                $.ajax({
+                    url: url,
                     type: 'POST',
                     contentType: 'application/json',
                     data: JSON.stringify(chatbotState),
                     success: () => {
-                        updateDropdownSelection(chatbotId, type)
-                        animatechatbot(chatbotId, true, animate);                             
+                        updateDropdownSelection(chatbotId, type);
+                        animateChatbot(chatbotId, true, animate);
                     },
-                    error: () => console.error(`Failed to update ${chatbotId}`),
+                    error: () => console.error(`Failed to update ${chatbotId}`)
                 });
             }
         }
 
-        function animatechatbot(chatbotId, show = true, animate = false) {
+        function animateChatbot(chatbotId, show = true, animate = false) {
             const chatbotState = currentStateList.find(state => state.chatbot_id === chatbotId);
             if (!chatbotState) {
                 console.error(`chatbot state not found for ID: ${chatbotId}`);
@@ -194,13 +165,13 @@
                 chatbotElement.show();
                 if (animate) {
                     console.log(`Animating chatbot ${chatbotId} to show.`);
-                    chatbotElement.removeClass('fade-out').addClass('fade-in'); // Apply fade-in class
+                    chatbotElement.removeClass('fade-out').addClass('fade-in');
                 }
             } 
             else {
                 if (animate) {
                     console.log(`Animating chatbot ${chatbotId} to hide.`);
-                    chatbotElement.removeClass('fade-in').addClass('fade-out'); // Apply fade-out class
+                    chatbotElement.removeClass('fade-in').addClass('fade-out');
                 }
                 else {
                     chatbotElement.hide();
@@ -208,22 +179,18 @@
             }
         }
 
-        function clonechatbots() {
+        function cloneChatbots() {
             const chatbotTypes = ['cpu', 'gpu', 'npu'];
             const chatbotTemplate = $('#chatbot');
 
             chatbotTypes.forEach(type => {
-                const clonedchatbot = chatbotTemplate.clone(true).attr('id', type).hide();
-
-                // Update IDs and attributes for the cloned chatbot
-                clonedchatbot.find('#fpsGauge').attr('id', `fpsGauge-${type}`);
-                clonedchatbot.find('#latencyGauge').attr('id', `latencyGauge-${type}`);
-                clonedchatbot.find('#modelDropdown').attr('id', `modelDropdown-${type}`);
-                clonedchatbot.find('#deviceDropdown').attr('id', `deviceDropdown-${type}`);
-                clonedchatbot.find('#precisionDropdown').attr('id', `precisionDropdown-${type}`);
-
-                // Append the cloned chatbot to the chatbots container
-                $('#chatbots').append(clonedchatbot);
+                const clonedChatbot = chatbotTemplate.clone(true).attr('id', type).hide();
+                clonedChatbot.find('#fpsGauge').attr('id', `fpsGauge-${type}`);
+                clonedChatbot.find('#latencyGauge').attr('id', `latencyGauge-${type}`);
+                clonedChatbot.find('#modelDropdown').attr('id', `modelDropdown-${type}`);
+                clonedChatbot.find('#deviceDropdown').attr('id', `deviceDropdown-${type}`);
+                clonedChatbot.find('#precisionDropdown').attr('id', `precisionDropdown-${type}`);
+                $('#chatbots').append(clonedChatbot);
 
                 currentStateList.push({
                     chatbot_id: type,
@@ -247,20 +214,14 @@
             const currentValue = chatbotState[type];
 
             if (currentValue) {
-                // Reset visibility for all options in the current dropdown
                 $(`#${type}Dropdown-${chatbotId} + .dropdown-menu .dropdown-item`).show();
-
-                // Hide the selected option for the current chatbot
                 $(`#${type}Dropdown-${chatbotId} + .dropdown-menu .dropdown-item[data-${type}="${currentValue}"]`).hide();
-
-                // Update the dropdown button text to reflect the current value
                 $(`#${type}Dropdown-${chatbotId}`).text(currentValue);
 
-                // Multi-device handling: Hide the selected option across other chatbots
-                if (type == 'device' && isMultipleDevices()) {
+                if (type === 'device' && isMultipleDevices()) {
                     currentStateList.forEach(state => {
                         $(`#${type}Dropdown-${state.chatbot_id} + .dropdown-menu .dropdown-item[data-${type}="${currentValue}"]`).hide();
-                        if (chatbotId==state.chatbot_id) {
+                        if (chatbotId === state.chatbot_id) {
                             currentStateList.filter(s => s.running).forEach(runningState => {
                                 $(`#${type}Dropdown-${chatbotId} + .dropdown-menu .dropdown-item[data-${type}="${runningState[type]}"]`).hide();
                             });
@@ -272,11 +233,11 @@
 
         function initialCaptionConfigs(chatbotId) {
             return {
-                    cpu: $("#cpuGauge").jqxGauge('caption'),
-                    power: $("#powerGauge").jqxGauge('caption'),
-                    fps: $(`#fpsGauge-${chatbotId}`).jqxGauge('caption'),
-                    latency: $(`#latencyGauge-${chatbotId}`).jqxGauge('caption'),
-                };
+                cpu: $("#cpuGauge").jqxGauge('caption'),
+                power: $("#powerGauge").jqxGauge('caption'),
+                fps: $(`#fpsGauge-${chatbotId}`).jqxGauge('caption'),
+                latency: $(`#latencyGauge-${chatbotId}`).jqxGauge('caption')
+            };
         }
 
         function updateGaugeCaption(id, value, initialCaptionConfig) {
@@ -291,9 +252,8 @@
 
         function initGauges() {
             const chatbotTypes = ['cpu', 'gpu', 'npu'];
-
             initializeGauge('#cpuGauge', { width: 140, height: 140, hasPointer: true, offset: [0,5], ranges: [[0, 50], [50, 80], [80, 100]] });
-            initializeGauge('#powerGauge', { width: 140, height: 140, hasPointer: true,  offset: [0,5], ranges: [[0, 20], [20, 40], [40, 60]] });
+            initializeGauge('#powerGauge', { width: 140, height: 140, hasPointer: true, offset: [0,5], ranges: [[0, 20], [20, 40], [40, 60]] });
 
             chatbotTypes.forEach(type => {
                 initializeGauge(`#fpsGauge-${type}`, { width: 80, height: 80, hasPointer: false, position: "top", ranges: [] });
@@ -306,14 +266,11 @@
                 url: "/get_metrics",
                 method: "GET",
                 success: function (data) {
-                    // Update overall CPU and Power metrics
                     const cpuPercent = data.cpu_percent ?? 0;
                     const powerData = data.power_data ?? 0;
-
-                    updateGaugeCaption("#cpuGauge", cpuPercent,  initialCaptionConfigs('cpu').cpu);
+                    updateGaugeCaption("#cpuGauge", cpuPercent, initialCaptionConfigs('cpu').cpu);
                     updateGaugeCaption("#powerGauge", powerData, initialCaptionConfigs('cpu').power);
 
-                    // Update gauges for each running chatbot
                     if (data.chatbots) {
                         Object.keys(data.chatbots).forEach(chatbotId => {
                             const chatbotMetrics = data.chatbots[chatbotId];
@@ -332,64 +289,49 @@
             });
         }
 
-
         function isMultipleDevices() {
-            return $('#multiDeviceToggle').text().trim() == "Single Device";
+            return $('#multiDeviceToggle').text().trim() === "Single Device";
         }
 
         $('.dropdown-menu').on('click', '.dropdown-item', function () {
-            const type = $(this).closest('.dropdown-menu').data('type'); 
-            const value = $(this).data(type); // Selected value from the dropdown
+            const type = $(this).closest('.dropdown-menu').data('type');
+            const value = $(this).data(type);
             const chatbotId = $(this).closest('.chatbot').attr('id');
 
             if (type === 'device') {
-                const newchatbotId = value.toLowerCase()
-                updateDropdownSelection(newchatbotId, type);
+                const newChatbotId = value.toLowerCase();
+                updateDropdownSelection(newChatbotId, type);
 
                 if (isMultipleDevices()) {
-                    startchatbot(newchatbotId);
+                    startChatbot(newChatbotId);
                 } else {
-                    stopchatbot(chatbotId);
-                    startchatbot(newchatbotId);
+                    stopChatbot(chatbotId);
+                    startChatbot(newChatbotId);
                 }
             } else {
-                updatechatbot(chatbotId, type, value);
+                updateChatbot(chatbotId, type, value);
             }
         });
 
         $('#multiDeviceToggle').on('click', function () {
             $(this).text(isMultipleDevices() ? "Multiple Devices" : "Single Device");
-            $(this).toggleClass('active'); 
+            $(this).toggleClass('active');
             if (!isMultipleDevices()) {
                 currentStateList.forEach((state, index) => {
-                    updateDropdownSelection(state.chatbot_id, 'device', false)
-                    if (index != 0) {
-                        stopchatbot(state.chatbot_id, false);
+                    updateDropdownSelection(state.chatbot_id, 'device');
+                    if (index !== 0) {
+                        stopChatbot(state.chatbot_id, false);
                     }
-               });
-            } 
+                });
+            }
         });
-
 
         $(document).ready(function () {
-
-            // Clone chatbots for each device type
-            clonechatbots();
-
+            cloneChatbots();
             initGauges();
-
-            // Initialize default chatbot
-            default_chatbot = '{{default_device}}'.toLowerCase();
-            startchatbot(default_chatbot);
-
-            // Periodically update gauges
-            setInterval(updateGauges, 1000);
-
+            const defaultChatbot = '{{default_device}}'.toLowerCase();
+            startChatbot(defaultChatbot);
+         //   setInterval(updateGauges, 1000);
         });
-
-       
-
     </script>
-
 {% endblock %}
-

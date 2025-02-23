@@ -15,6 +15,10 @@ class Chatbot:
         self.queue = Queue(maxsize=100)
         self.cv = Condition()
         self.pipeline = None
+        self.fps = 0.0
+        self.latency = 0.0
+        self._token_count = 0
+        self._last_time = time.time()
         self.load_model()
 
     def load_model(self):
@@ -51,7 +55,7 @@ class Chatbot:
         return False
 
     def run(self):
-        """Chatbot processing loop."""
+        """Chatbot processing loop with benchmarking."""
         try:
             while self.running:
                 with self.cv:
@@ -63,7 +67,21 @@ class Chatbot:
                 try:
                     prompt = self.queue.get(timeout=0.5)
                     if prompt:
+                        start_time = time.time()
                         response = self.generate_text(prompt)
+                        end_time = time.time()
+                        
+                        # Calculate latency (in ms)
+                        self.latency = (end_time - start_time) * 1000
+                        # Calculate FPS (tokens per second)
+                        token_count = len(response.split())  # Rough token count
+                        self._token_count += token_count
+                        elapsed_time = end_time - self._last_time
+                        if elapsed_time > 1.0:  # Update FPS every second
+                            self.fps = self._token_count / elapsed_time
+                            self._token_count = 0
+                            self._last_time = end_time
+                        
                         self.queue.put(response, timeout=0.001)
                 except Empty:
                     continue
@@ -92,3 +110,7 @@ class Chatbot:
             return self.queue.get(timeout=0.5)
         except Empty:
             return None
+
+    def get_benchmark_data(self):
+        """Return FPS and latency for benchmarking."""
+        return self.fps, self.latency

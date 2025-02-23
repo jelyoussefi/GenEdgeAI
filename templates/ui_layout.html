@@ -21,86 +21,59 @@
     </div>
 
     <div id="chatbots-container" class="d-flex flex-column align-items-center">
-        <div class="chatbots-wrapper d-flex flex-column align-items-center">
-
-            <hr class="separator">
-
-            <div id="chatbots">
-                <div class="chatbot" id="chatbot" style="display: none;">
-                    <div id="chatbot-container" class="d-flex align-items-center justify-content-center mt-3">
-
-                        <div class="chat-message bot-message">Hi there </div>
-
-                        <!-- FPS Gauge -->
-                        <div class="gauge-container fps-container">
-                            <div id="fpsGauge" class="gauge"></div>
-                            <div class="gauge-label fps-label">FPS</div>
-                        </div>
-
-                        <!-- Latency Gauge -->
-                        <div class="gauge-container latency-container">
-                            <div id="latencyGauge" class="gauge"></div>
-                            <div class="gauge-label latency-label">Latency</div>
+        <hr class="separator">
+        <div id="chatbots">
+            <div class="chatbot" id="chatbot">
+                <div id="chatbot-container" class="d-flex align-items-center justify-content-center mt-3">
+                    <div class="chatboot-message">Hi there</div>
+                </div>
+                <!-- Control Section -->
+                <div id="chatbot-control" class="control mt-3">
+                    <!-- Dropdowns for models, devices, and precision -->
+                    <div class="dropdown">
+                        <button class="custom-button btn btn-secondary dropdown-toggle" type="button" id="modelDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            {{ default_model }}
+                        </button>
+                        <div class="dropdown-menu" aria-labelledby="modelDropdown" data-type="model">
+                            {% for model in models %}
+                                <a class="dropdown-item model-option" data-model="{{ model }}">{{ model }}</a>
+                            {% endfor %}
                         </div>
                     </div>
-
-                    <!-- Control Section -->
-                    <div id="control" class="mt-3">
-                        <!-- Dropdowns for models, devices, and precision -->
-
-                        <div class="dropdown">
-                            <button class="custom-button btn btn-secondary dropdown-toggle" type="button" id="modelDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                {{ default_model }}
-                            </button>
-                            <div class="dropdown-menu" aria-labelledby="modelDropdown" data-type="model">
-                                {% for model in models %}
-                                    <a class="dropdown-item model-option"  data-model="{{ model_name }}">{{ model }}</a>
-                                {% endfor %}
-                            </div>
+                    <div class="dropdown">
+                        <button class="custom-button btn btn-secondary dropdown-toggle" type="button" id="deviceDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            {{ default_device }}
+                        </button>
+                        <div class="dropdown-menu" aria-labelledby="deviceDropdown" data-type="device">
+                            {% for device in devices %}
+                                <a class="dropdown-item device-option" data-device="{{ device }}">{{ device }}</a>
+                            {% endfor %}
                         </div>
-
-                        <div class="dropdown">
-                            <button class="custom-button btn btn-secondary dropdown-toggle" type="button" id="deviceDropdown" class="deviceDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                {{ default_device }}
-                            </button>
-                            <div class="dropdown-menu" aria-labelledby="deviceDropdown" data-type="device">
-                                 {% for device in devices %}
-                                    <a class="dropdown-item device-option"  data-device="{{ device }}">{{ device }}</a>
-                                {% endfor %}
-                            </div>
+                    </div>
+                    <div class="dropdown">
+                        <button class="custom-button btn btn-secondary dropdown-toggle" type="button" id="precisionDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            {{ default_precision }}
+                        </button>
+                        <div class="dropdown-menu" aria-labelledby="precisionDropdown" data-type="precision">
+                            {% for precision in precisions %}
+                                <a class="dropdown-item precision-option" data-precision="{{ precision }}">{{ precision }}</a>
+                            {% endfor %}
                         </div>
-
-                        <div class="dropdown">
-                            <button class="custom-button btn btn-secondary dropdown-toggle" type="button" id="precisionDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                {{ default_precision }}
-                            </button>
-                            <div class="dropdown-menu" aria-labelledby="precisionDropdown" data-type="precision">
-                                <a class="dropdown-item precision-option" data-precision="FP32">FP32</a>
-                                <a class="dropdown-item precision-option" data-precision="FP16">FP16</a>
-                                <a class="dropdown-item precision-option" data-precision="INT8">INT8</a>
-                            </div>
-                        </div>
-
+                    </div>
                 </div>
             </div>
-            
-            <hr class="separator">
-        
+        </div>
+        <hr class="separator">
+        <div id="chatbot-prompt-container" class="d-flex align-items-center justify-content-center mt-3">
+            <div class="chatboot-prompt">Ask anything</div>
         </div>
     </div>
 
-    <div class="control" id="control" class="mt-3">
-
+    <div class="control"  id="general-control" class="mt-3">
         <div class="d-flex align-items-center justify-content-center mt-4">
             <button id="multiDeviceToggle" class="custom-button btn btn-primary">
                 Multiple Devices
             </button>
         </div>
-
     </div>
-
-
-    <div class="chat-message user-message">Hello</div>
-
-
 </div>
