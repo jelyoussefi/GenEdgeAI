@@ -59,15 +59,10 @@ html, body {
     width: 100%;
 }
 
-#chatbots-container {
-    flex: 1; /* Take remaining height of viewport */
-    width: 80vw; /* Take 80% of viewport width */
-    max-width: 1280px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    overflow-y: auto; /* Allow scrolling if content overflows */
-}
+
+/*--------------------------------------------------------------------------------------------------------------------------------------*/
+/*                                                                Chat Bot                                                              */
+/*--------------------------------------------------------------------------------------------------------------------------------------*/
 
 #chatbots {
     height: 75%; /* Take 75% of #chatbots-container height */
@@ -80,18 +75,14 @@ html, body {
     position: relative;
 }
 
-#chatbot-prompt-container {
-    height: 25%; /* Take 25% of #chatbots-container height */
-    width: 80%; /* Match #chatbot-container width */
-    max-width: 1280px;
+#chatbot-control {
+    width: 95%; /* Match #chatbot-container width */
     display: flex;
+    flex-direction: row;
+    justify-content: space-between; /* First button to left, last to right */
     align-items: center;
-    justify-content: center;
-    margin: 10px; /* Match #chatbot-container margin */
-    border: 2px solid #007bff; /* Blue contour, same as #chatbot-container */
-    border-radius: 12px; /* Rounded corners, same as #chatbot-container */
-    background: rgba(255, 255, 255, 0.9); /* Subtle white background with transparency, same as #chatbot-container */
-    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3); /* Soft blue shadow, same as #chatbot-container */
+    margin: 10px; /* Keep some padding but remove button-specific margin */
+    gap: 0px; /* No extra space between buttons */
 }
 
 .chatbot {
@@ -106,46 +97,132 @@ html, body {
     position: relative;
 }
 
+/* Main layout styling */
+html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    background: linear-gradient(135deg, #d3d3d3, #b0b0b0);
+    font-family: Arial, Helvetica, sans-serif;
+    box-sizing: border-box;
+}
+
+.container {
+    width: 100vw;
+    height: 100vh;
+    max-width: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    flex: 1;
+}
+
+#chatbots-container {
+    flex: 1;
+    width: 80vw;
+    max-width: 1280px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow-y: auto;
+    height: 100%;
+}
+
 #chatbot-container {
-    flex: 1; /* Take 100% of remaining height within .chatbot */
-    width: 95%; /* Slightly less than full width for visual padding */
+    flex: 3; /* 75% of the total height */
+    overflow-y: auto;
+    width: 95%;
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+    flex-direction: column;
+    padding: 15px;
+    margin: 10px;
+    border: none;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+}
+
+#chatbot-prompt-container {
+    flex: 1; /* 25% of the total height */
+    width: 80%;
+    max-width: 1280px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 15px;
+    margin-top: 15px;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 24px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    border: none;
+    backdrop-filter: blur(10px);
+    gap: 10px;
+}
+
+#chatbot-input {
+    flex: 1;
+    height: 100%;
+    font-size: 16px;
+    font-family: 'Arial', sans-serif;
+    font-weight: 500;
+    color: #333;
+    padding: 12px 15px;
+    background: transparent;
+    border-radius: 24px;
+    border: none;
+    outline: none;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+    min-height: 50px; /* Minimum height */
+    max-height: 150px; /* Limit max height to prevent overflow */
+    overflow-y: auto; /* Enable scrolling if text exceeds max height */
+    resize: none; /* Disable manual resize */
+    line-height: 1.5;
+    white-space: pre-wrap; /* Ensure text formatting remains */
+}
+
+#send-button {
+    width: 50px;
+    height: 50px;
+    background: linear-gradient(135deg, #007bff, #0056b3);
+    border-radius: 50%;
+    border: none;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin: 10px; /* Consistent margin */
-    border: 2px solid #007bff; /* Blue contour */
-    border-radius: 12px; /* Rounded corners */
-    background: rgba(255, 255, 255, 0.9); /* Subtle white background with transparency */
-    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3); /* Soft blue shadow */
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    transition: transform 0.2s, background 0.3s;
 }
 
-#chatbot-control {
-    width: 95%; /* Match #chatbot-container width */
-    display: flex;
-    flex-direction: row; /* Horizontal alignment */
-    justify-content: center;
-    align-items: center;
-    margin: 10px; /* Match #chatbot-container margin */
-    gap: 20px; /* Consistent spacing between buttons */
+#send-button:hover {
+    background: #007bff;
+    transform: scale(1.1);
 }
 
-@keyframes fade-in {
-    0% { opacity: 0; }
-    100% { opacity: 1; }
+#send-button:active {
+    background: #0056b3;
+    transform: scale(0.95);
 }
 
-@keyframes fade-out {
-    0% { opacity: 1; }
-    100% { opacity: 0; }
+#send-button i {
+    font-size: 24px;
+    color: white;
 }
 
-.fade-in {
-    animation: fade-in 2s ease-in-out forwards;
-}
 
-.fade-out {
-    animation: fade-out 3s ease-in-out forwards;
-}
+/*--------------------------------------------------------------------------------------------------------------------------------------*/
+/*                                                               Gauges                                                                 */
+/*--------------------------------------------------------------------------------------------------------------------------------------*/
 
 #cpuGaugeContainer, #powerGaugeContainer {
     display: flex;
@@ -227,11 +304,17 @@ html, body {
     display: inline-block;
 }
 
+
+/*--------------------------------------------------------------------------------------------------------------------------------------*/
+/*                                                               Utils                                                                 */
+/*--------------------------------------------------------------------------------------------------------------------------------------*/
+
 .custom-button {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 180px;
+    min-width: 140px; /* Ensures minimum width */
+    width: auto; /* Allows flexibility */
     height: 45px;
     padding: 10px 15px;
     font-family: 'Arial', sans-serif;
@@ -243,12 +326,11 @@ html, body {
     border-radius: 8px;
     cursor: pointer;
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-    margin: 0 10px;
-    white-space: nowrap;
     overflow: hidden;
-    text-overflow: clip; /* Ensure beginning of text is shown */
-    text-align: left; /* Align text to the left to emphasize beginning */
+    text-overflow: ellipsis; /* Truncate text if too long */
+    text-align: center; /* Keep text centered */
 }
+
 
 .custom-button:hover {
     background: #007bff;
