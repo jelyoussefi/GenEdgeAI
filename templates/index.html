@@ -88,6 +88,8 @@
                 console.log(`Chatbot ${chatbotId} is already running.`);
                 return;
             }
+            
+            element.show();
 
             console.log(`Starting chatbot: ${chatbotId}`);
 
@@ -98,7 +100,6 @@
                 data: JSON.stringify(state),
                 success: () => {
                     console.log(`Chatbot ${chatbotId} started`);
-                    element.show();
                     state.running = true;
                 },
                 error: (xhr) => {
@@ -278,8 +279,8 @@
             initializeGauge('#powerGauge', { width: 140, height: 140, hasPointer: true, offset: [0, 5], ranges: [[0, 20], [20, 40], [40, 60]] });
 
             types.forEach(type => {
-                initializeGauge(`#fpsGauge-${type}`, { width: 100, height: 80, hasPointer: false, position: 'top', ranges: [] });
-                initializeGauge(`#latencyGauge-${type}`, { width: 100, height: 80, hasPointer: false, position: 'top', ranges: [] });
+                initializeGauge(`#fpsGauge-${type}`, { width: 80, height: 80, hasPointer: false, ranges: [] });
+                initializeGauge(`#latencyGauge-${type}`, { width: 80, height: 80, hasPointer: false, ranges: [] });
             });
         }
 

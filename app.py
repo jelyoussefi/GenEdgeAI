@@ -12,6 +12,7 @@ from utils.system_utils import get_power_consumption, get_gpu_model, list_device
 from utils.chatbot import Chatbot
 
 log = logging.getLogger('werkzeug')
+log.setLevel(logging.ERROR)
 
 class ChatbotApp:
 	def __init__(self, port=80):
