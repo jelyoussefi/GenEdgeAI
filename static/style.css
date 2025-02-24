@@ -324,9 +324,10 @@ html, body {
 /* Gauge Containers (FPS and Latency) */
 .gauge-container {
     display: flex;
-    flex-direction: column; /* Stack gauge and label vertically */
-    align-items: center;
-    background: transparent; /* Ensure transparent background for gauge containers */
+    flex-direction: column; /* Stack gauge on top, label below */
+    align-items: center; /* Center both gauge and label horizontally */
+    justify-content: center; /* Center vertically within the container (minimal effect here) */
+    background: transparent; /* Keep transparent background */
 }
 
 /* Gauge Styling */
@@ -335,6 +336,8 @@ html, body {
     align-items: center;
     justify-content: center;
     border-radius: 50%; /* Ensure circular appearance */
+    width: 80px; /* Match JavaScript initialization */
+    height: 80px; /* Match JavaScript initialization */
 }
 
 /* Generic Gauge Labels */
@@ -342,10 +345,10 @@ html, body {
     font-size: 18px;
     font-weight: bold;
     text-align: center;
-    margin-top: 5px; /* Space between gauge and label */
+    margin-top: 5px; /* Space between gauge and label (adjust as needed) */
     background: linear-gradient(90deg, #007bff, #0056b3);
     -webkit-background-clip: text;
-    color: transparent; /* Default color for general labels */
+    color: transparent; /* Default gradient text */
     text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.3); /* Subtle shadow */
     letter-spacing: 1px;
     font-family: 'Arial', sans-serif;
@@ -354,11 +357,12 @@ html, body {
 /* FPS and Latency Labels */
 .fps-label,
 .latency-label {
-    color: white;
+    color: #333; /* Dark gray for visibility on white background */
     font-size: 14px;
     font-weight: bold;
     text-align: center;
-    text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.5);
+    text-shadow: none; /* Remove shadow for clean look on white background */
+    margin-top: 5px; /* Consistent spacing below gauge */
 }
 
 /* Gauge Captions */
@@ -372,16 +376,6 @@ html, body {
     font-size: 18px !important;
     font-weight: bold;
 }
-
-/* FPS and Latency Labels */
-.fps-label,
-.latency-label {
-    font-size: 14px;
-    font-weight: bold;
-    text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.5);
-    margin-top: 5px; /* Ensure label is under the gauge */
-}
-
 /* ========================================================================= */
 /* Utilities Styling                                                        */
 /* ========================================================================= */
