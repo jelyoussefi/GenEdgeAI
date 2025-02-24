@@ -234,8 +234,8 @@
             initializeGauge('#powerGauge', { width: 140, height: 140, hasPointer: true, offset: [0,5], ranges: [[0, 20], [20, 40], [40, 60]] });
 
             chatbotTypes.forEach(type => {
-                initializeGauge(`#fpsGauge-${type}`, { width: 70, height: 70, hasPointer: false, position: "top", ranges: [] });
-                initializeGauge(`#latencyGauge-${type}`, { width: 70, height: 70, hasPointer: false, position: "top", ranges: [] });
+                initializeGauge(`#fpsGauge-${type}`, { width: 80, height: 80, hasPointer: false, position: "top", ranges: [] });
+                initializeGauge(`#latencyGauge-${type}`, { width: 80, height: 80, hasPointer: false, position: "top", ranges: [] });
             });
         }
 
@@ -244,8 +244,8 @@
                 url: "/get_metrics",
                 method: "GET",
                 success: function (data) {
-                    const cpuPercent = data.cpu_percent ?? 0;
-                    const powerData = data.power_data ?? 0;
+                    const cpuPercent =  Math.round(data.cpu_percent ?? 0);
+                    const powerData =  Math.round(data.power_data ?? 0);
                     updateGaugeCaption("#cpuGauge", cpuPercent, initialCaptionConfigs('cpu').cpu);
                     updateGaugeCaption("#powerGauge", powerData, initialCaptionConfigs('cpu').power);
 
@@ -253,8 +253,8 @@
                         Object.keys(data.chatbots).forEach(chatbotId => {
                             const chatbotMetrics = data.chatbots[chatbotId];
                             if (chatbotMetrics) {
-                                const fps = Math.round(chatbotMetrics.fps ?? 0);
-                                const latency = Math.round(chatbotMetrics.latency ?? 0);
+                                const fps = 12;//Math.round(chatbotMetrics.fps ?? 0);
+                                const latency = 20;//Math.round(chatbotMetrics.latency ?? 0);
                                 updateGaugeCaption(`#fpsGauge-${chatbotId}`, fps, initialCaptionConfigs(chatbotId).fps);
                                 updateGaugeCaption(`#latencyGauge-${chatbotId}`, latency, initialCaptionConfigs(chatbotId).latency);
                             }
@@ -340,7 +340,7 @@
             startChatbot(defaultChatbot);
             toggleSendButton();
 
-         //   setInterval(updateGauges, 1000);
+            setInterval(updateGauges, 1000);
         });
     </script>
 {% endblock %}
