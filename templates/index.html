@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/css/bootstrap-datetimepicker.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <script src="https://unpkg.com/@turf/turf@6.2.0-alpha.1/dist/turf.min.js"></script>
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
 {% endblock %}
@@ -65,7 +66,7 @@
             });
         }
 
-        function startChatbot(chatbotId, animate = false) {
+        function startChatbot(chatbotId) {
             const chatbotState = currentStateList.find(state => state.chatbot_id === chatbotId);
             const chatbotElement = chatbotState.selector;
 
@@ -83,6 +84,7 @@
                 data: JSON.stringify(chatbotState),
                 success: () => {
                     console.log(`chatbot ${chatbotId} started`);
+                    chatbotElement.show();
                     chatbotState.running = true;
                 },
                 error: (xhr) => {
@@ -98,7 +100,7 @@
             ['model', 'device', 'precision'].forEach(item => updateDropdownSelection(chatbotId, item));
         }
 
-        function stopChatbot(chatbotId, animate = false) {
+        function stopChatbot(chatbotId) {
             const chatbotState = currentStateList.find(state => state.chatbot_id === chatbotId);
             const chatbotElement = chatbotState.selector;
 
@@ -121,11 +123,13 @@
                 error: (xhr, status, error) => console.error(`Failed to stop ${chatbotId}:`, { status, error, response: xhr.responseText })
             });
 
-            animateChatbot(chatbotId, false, animate);
+            chatbotElement.hide();
         }
 
-        function updateChatbot(chatbotId, type, value, animate = false) {
+        function updateChatbot(chatbotId, type, value) {
             const chatbotState = currentStateList.find(state => state.chatbot_id === chatbotId);
+            const chatbotElement = chatbotState.selector;
+
             if (!chatbotState.running) {
                 console.log(`chatbot ${chatbotId} is not running.`);
                 return;
@@ -135,7 +139,7 @@
 
             if (chatbotState[type] !== value) {
                 chatbotState[type] = value;
-                animateChatbot(chatbotId, false, animate);
+                chatbotElement.hide()
 
                 const url = type === 'precision' ? '/set_precision' : '/start_chatbot';
                 $.ajax({
@@ -145,39 +149,13 @@
                     data: JSON.stringify(chatbotState),
                     success: () => {
                         updateDropdownSelection(chatbotId, type);
-                        animateChatbot(chatbotId, true, animate);
+                        chatbotElement.how()
                     },
                     error: () => console.error(`Failed to update ${chatbotId}`)
                 });
             }
         }
 
-        function animateChatbot(chatbotId, show = true, animate = false) {
-            const chatbotState = currentStateList.find(state => state.chatbot_id === chatbotId);
-            if (!chatbotState) {
-                console.error(`chatbot state not found for ID: ${chatbotId}`);
-                return;
-            }
-
-            const chatbotElement = chatbotState.selector;
-
-            if (show) {
-                chatbotElement.show();
-                if (animate) {
-                    console.log(`Animating chatbot ${chatbotId} to show.`);
-                    chatbotElement.removeClass('fade-out').addClass('fade-in');
-                }
-            } 
-            else {
-                if (animate) {
-                    console.log(`Animating chatbot ${chatbotId} to hide.`);
-                    chatbotElement.removeClass('fade-in').addClass('fade-out');
-                }
-                else {
-                    chatbotElement.hide();
-                }
-            }
-        }
 
         function cloneChatbots() {
             const chatbotTypes = ['cpu', 'gpu', 'npu'];
@@ -256,8 +234,8 @@
             initializeGauge('#powerGauge', { width: 140, height: 140, hasPointer: true, offset: [0,5], ranges: [[0, 20], [20, 40], [40, 60]] });
 
             chatbotTypes.forEach(type => {
-                initializeGauge(`#fpsGauge-${type}`, { width: 80, height: 80, hasPointer: false, position: "top", ranges: [] });
-                initializeGauge(`#latencyGauge-${type}`, { width: 80, height: 80, hasPointer: false, position: "top", ranges: [] });
+                initializeGauge(`#fpsGauge-${type}`, { width: 70, height: 70, hasPointer: false, position: "top", ranges: [] });
+                initializeGauge(`#latencyGauge-${type}`, { width: 70, height: 70, hasPointer: false, position: "top", ranges: [] });
             });
         }
 
@@ -326,11 +304,42 @@
             }
         });
 
+
+        // Function to toggle send button state based on input
+        function toggleSendButton() {
+            const message = $('#chatbot-input').val().trim();
+            $('#send-button').prop('disabled', !message); // Disable if no text, enable if there’s text
+        }
+
+        // Listen for input changes
+        $('#chatbot-input').on('input', toggleSendButton);
+
+        // Handle send button click
+        $('#send-button').on('click', function () {
+            const message = $('#chatbot-input').val().trim();
+            if (message) {
+                console.log('Sending message:', message);
+                // Add your AJAX call or logic to send the message to the chatbot here
+                $('#chatbot-input').val(''); // Clear input after sending
+                toggleSendButton(); // Ensure button is disabled after clearing
+            }
+        });
+
+        // Allow pressing Enter to send the message
+        $('#chatbot-input').on('keypress', function (e) {
+            if (e.which === 13 && !e.shiftKey) { // Enter key without Shift
+                e.preventDefault();
+                $('#send-button').click();
+            }
+        });
+
         $(document).ready(function () {
             cloneChatbots();
             initGauges();
             const defaultChatbot = '{{default_device}}'.toLowerCase();
             startChatbot(defaultChatbot);
+            toggleSendButton();
+
          //   setInterval(updateGauges, 1000);
         });
     </script>

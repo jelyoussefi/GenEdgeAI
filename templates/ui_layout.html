@@ -23,9 +23,26 @@
     <div id="chatbots-container" class="d-flex flex-column align-items-center">
         <hr class="separator">
         <div id="chatbots">
-            <div class="chatbot" id="chatbot">
+            <div class="chatbot" id="chatbot" style="display: none;">
                 <div id="chatbot-container" class="d-flex align-items-center justify-content-center mt-3">
-                    <div class="chatboot-message">Hi there</div>
+                    <div class="chatbot-metrics">
+
+                        <div class="gauge-container fps-container">
+                            <div id="fpsGauge" class="gauge"></div>
+                            <div class="gauge-label fps-label">FPS</div>
+                        </div>
+                        <div class="gauge-container latency-container">
+                            <div id="latencyGauge" class="gauge"></div>
+                            <div class="gauge-label latency-label">Latency</div>
+                        </div>
+                    </div>
+                    
+                    <div class="chatbot-message">
+                        <div class="message-content">Hi there</div>
+                        <button class="copy-button">
+                            <i class="fas fa-copy"></i> <!-- FontAwesome Copy Icon -->
+                        </button>
+                    </div>
                 </div>
                 <!-- Control Section -->
                 <div id="chatbot-control" class="control mt-3">
@@ -63,14 +80,18 @@
                 </div>
             </div>
         </div>
+        
         <hr class="separator">
-       <div id="chatbot-prompt-container">
-            <textarea id="chatbot-input" placeholder="Type a message..." rows="1"></textarea>
-            <button id="send-button">
-                <i class="fas fa-paper-plane"></i> <!-- FontAwesome Send Icon -->
-            </button>
-        </div>
 
+        <div id="chatbot-prompt-container">
+            <div class="chatbot-prompt-inner">
+                <textarea id="chatbot-input" placeholder="Ask me anything..." rows="1"></textarea>
+                <button id="send-button" disabled>
+                    <i class="fas fa-arrow-up"></i> <!-- FontAwesome Up Arrow Icon -->
+                </button>
+            </div>
+        </div>
+    
     </div>
 
     <div class="control"  id="general-control" class="mt-3">

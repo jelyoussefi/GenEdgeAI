@@ -1,4 +1,8 @@
-/* Main layout styling */
+/* ========================================================================= */
+/* Global Layout Styling                                                    */
+/* ========================================================================= */
+
+/* Basic HTML and Body Setup */
 html, body {
     margin: 0;
     padding: 0;
@@ -13,6 +17,7 @@ html, body {
     box-sizing: border-box;
 }
 
+/* Main Container Styling */
 .container {
     width: 100vw;
     height: 100vh;
@@ -25,6 +30,7 @@ html, body {
     flex: 1;
 }
 
+/* Title and System Container Styling */
 #title {
     font-size: 52px;
     font-weight: bold;
@@ -51,6 +57,7 @@ html, body {
     margin-top: 40px;
 }
 
+/* Separator Styling */
 .separator {
     height: 4px;
     background: linear-gradient(to right, #007bff, #0056b3);
@@ -59,11 +66,11 @@ html, body {
     width: 100%;
 }
 
+/* ========================================================================= */
+/* Chat Bot Styling                                                         */
+/* ========================================================================= */
 
-/*--------------------------------------------------------------------------------------------------------------------------------------*/
-/*                                                                Chat Bot                                                              */
-/*--------------------------------------------------------------------------------------------------------------------------------------*/
-
+/* Chat Bots Container and Layout */
 #chatbots {
     height: 75%; /* Take 75% of #chatbots-container height */
     width: 80%; /* Span 80% of container */
@@ -71,7 +78,6 @@ html, body {
     flex-direction: row;
     justify-content: center;
     align-items: flex-start;
-    margin: 20px;
     position: relative;
 }
 
@@ -97,33 +103,7 @@ html, body {
     position: relative;
 }
 
-/* Main layout styling */
-html, body {
-    margin: 0;
-    padding: 0;
-    width: 100%;
-    height: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    background: linear-gradient(135deg, #d3d3d3, #b0b0b0);
-    font-family: Arial, Helvetica, sans-serif;
-    box-sizing: border-box;
-}
-
-.container {
-    width: 100vw;
-    height: 100vh;
-    max-width: none;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    flex: 1;
-}
-
+/* Chat Bots Main Container */
 #chatbots-container {
     flex: 1;
     width: 80vw;
@@ -132,149 +112,259 @@ html, body {
     flex-direction: column;
     align-items: center;
     overflow-y: auto;
-    height: 100%;
+    height: 100%; /* Ensure it uses the full available height */
 }
 
+/* Chat Bot Container */
 #chatbot-container {
-    flex: 3; /* 75% of the total height */
+    flex: 3; /* 75% of #chatbots-container height */
+    overflow-x: hidden; /* Remove horizontal scrollbar */
     overflow-y: auto;
-    width: 95%;
+    width: 100%; /* Full width for consistency */
     display: flex;
-    align-items: flex-start;
-    justify-content: flex-start;
-    flex-direction: column;
-    padding: 15px;
+    flex-direction: column; /* Ensure vertical stacking */
+    align-items: flex-start; /* Align items to the top */
+    justify-content: flex-start; /* Stack from the top */
     margin: 10px;
-    border: none;
-    border-radius: 12px;
-    background: rgba(255, 255, 255, 0.15);
-    backdrop-filter: blur(10px);
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+    border: none; /* Remove border (no contour) */
+    border-radius: 16px; /* Keep rounded corners for a sexy contour */
+    background: transparent; /* Fully transparent background */
+    backdrop-filter: none; /* Remove glass effect */
+    box-shadow: none; /* Remove shadow (no contour) */
+    transition: all 0.3s ease;
+    height: 100%; /* Ensure it uses the full height of its flex allocation */
 }
 
-#chatbot-prompt-container {
-    flex: 1; /* 25% of the total height */
-    width: 80%;
-    max-width: 1280px;
+/* Chat Bot Metrics (FPS and Latency Gauges) */
+.chatbot-metrics {
+    width: 100%; /* Full width of #chatbot-container */
+    height: auto; /* Automatic height based on content (gauges) */
+    display: flex; /* Ensure flex layout for horizontal alignment */
+    flex-direction: row; /* Align elements horizontally */
+    align-items: center; /* Center vertically within its height */
+    justify-content: space-between; /* Evenly distribute gauges uniformly with space between */
+    margin-bottom: 10px; /* Space before .chatbot-message */
+    padding: 10px 20px; /* Add horizontal padding for spacing, keep vertical at 10px */
+    border-radius: 12px; /* Rounded corners to match .chatbot-message */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle grey shadow for consistency */
+    position: relative; /* For potential future positioning if needed */
+    overflow: hidden; /* Ensure no overflow from gauges */
+}
+
+
+/* Chat Bot Message */
+.chatbot-message {
+    width: 100%; /* Full width of #chatbot-container */
+    height: 100%; /* Full height of #chatbot-container (adjusts to remaining space) */
+    max-width: 100%; /* Ensure it doesn’t exceed the container */
+    padding: 15px;
+    background: #ffffff; /* White background (kept for message readability) */
+    border: 1px solid #e0e0e0; /* Light grey border */
+    border-radius: 12px; /* Rounded corners */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle grey shadow */
     display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 10px 15px;
-    margin-top: 15px;
-    background: rgba(255, 255, 255, 0.15);
-    border-radius: 24px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-    border: none;
-    backdrop-filter: blur(10px);
-    gap: 10px;
+    flex-direction: column; /* Stack content vertically for alignment */
+    align-items: flex-start; /* Align text to the top */
+    justify-content: flex-start; /* Stack from the top */
+    position: relative;
+    transition: all 0.3s ease;
+    overflow-y: auto; /* Allow scrolling if content exceeds height */
 }
 
-#chatbot-input {
+/* Message Content */
+.message-content {
     flex: 1;
-    height: 100%;
     font-size: 16px;
     font-family: 'Arial', sans-serif;
     font-weight: 500;
     color: #333;
-    padding: 12px 15px;
-    background: transparent;
-    border-radius: 24px;
-    border: none;
-    outline: none;
-    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
-    min-height: 50px; /* Minimum height */
-    max-height: 150px; /* Limit max height to prevent overflow */
-    overflow-y: auto; /* Enable scrolling if text exceeds max height */
-    resize: none; /* Disable manual resize */
-    line-height: 1.5;
-    white-space: pre-wrap; /* Ensure text formatting remains */
+    word-wrap: break-word; /* Ensure long text wraps */
+    overflow-wrap: break-word; /* Alternative for older browsers */
+    height: auto; /* Adjust height based on content */
+    display: flex;
+    align-items: flex-start; /* Align text to the top */
+    flex-direction: column; /* Stack text vertically if needed */
 }
 
+/* Chat Bot Prompt Container */
+#chatbot-prompt-container {
+    flex: 1; /* 25% of #chatbots-container height */
+    width: 80%;
+    max-width: 1280px;
+    padding: 15px 20px; /* Increased padding for a more spacious feel */
+    margin-top: 15px;
+    background: #ffffff; /* White background (kept for contrast) */
+    border: 2px solid #e0e0e0; /* Light grey border for contour */
+    border-radius: 16px; /* Rounded corners for a sexy contour */
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1), 0 4px 8px rgba(128, 128, 128, 0.2); /* Grey shadowed contour */
+    display: flex;
+    align-items: flex-start; /* Align content to the top */
+    justify-content: space-between;
+    transition: all 0.3s ease;
+}
+
+/* Chat Bot Prompt Inner */
+.chatbot-prompt-inner {
+    width: 100%;
+    display: flex;
+    align-items: flex-start; /* Align content to the top */
+    justify-content: space-between;
+    gap: 10px;
+}
+
+/* Chat Bot Input */
+#chatbot-input {
+    flex: 1;
+    height: auto; /* Remove fixed height to allow top alignment */
+    font-size: 16px;
+    font-family: 'Arial', sans-serif;
+    font-weight: 500;
+    color: #333;
+    background: transparent;
+    border: none;
+    border-radius: 12px; /* Rounded corners to match container */
+    outline: none;
+    box-shadow: none;
+    min-height: 40px;
+    max-height: 150px;
+    overflow-y: auto;
+    resize: none;
+    line-height: 1.5;
+    white-space: pre-wrap;
+    align-self: flex-start; /* Align input to the top */
+    transition: all 0.3s ease;
+}
+
+#chatbot-input::placeholder {
+    color: #999;
+    font-style: italic;
+}
+
+/* Copy Button */
+.copy-button {
+    width: 24px;
+    height: 24px;
+    background: #f5f5f5; /* Light gray background */
+    border: 1px solid #e0e0e0;
+    border-radius: 50%; /* Circular button */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(128, 128, 128, 0.2); /* Grey shadow */
+    transition: background 0.3s, transform 0.2s;
+}
+
+.copy-button:hover {
+    background: #e0e0e0; /* Slightly darker on hover */
+    transform: scale(1.1);
+}
+
+.copy-button:active {
+    background: #d0d0d0; /* Even darker when clicked */
+    transform: scale(0.95);
+}
+
+.copy-button i {
+    font-size: 14px;
+    color: #666; /* Gray icon */
+}
+
+/* Send Button */
 #send-button {
-    width: 50px;
-    height: 50px;
-    background: linear-gradient(135deg, #007bff, #0056b3);
+    width: 32px;
+    height: 32px;
+    background: #000000; /* Black background for the button */
     border-radius: 50%;
     border: none;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 2px 4px rgba(128, 128, 128, 0.2); /* Grey shadow */
     transition: transform 0.2s, background 0.3s;
 }
 
 #send-button:hover {
-    background: #007bff;
+    background: #333;
     transform: scale(1.1);
 }
 
 #send-button:active {
-    background: #0056b3;
+    background: #555;
     transform: scale(0.95);
 }
 
-#send-button i {
-    font-size: 24px;
-    color: white;
+#send-button:disabled {
+    background: #cccccc; /* Grayed-out background when disabled */
+    cursor: not-allowed;
+    box-shadow: none;
 }
 
+#send-button:disabled i {
+    color: #999; /* Grayed-out arrow when disabled */
+}
 
-/*--------------------------------------------------------------------------------------------------------------------------------------*/
-/*                                                               Gauges                                                                 */
-/*--------------------------------------------------------------------------------------------------------------------------------------*/
+#send-button i {
+    font-size: 16px;
+    color: #ffffff; /* White arrow */
+}
 
+/* ========================================================================= */
+/* Gauges Styling                                                           */
+/* ========================================================================= */
+
+/* CPU and Power Gauge Containers */
 #cpuGaugeContainer, #powerGaugeContainer {
     display: flex;
     flex-direction: column;
     align-items: center;
 }
 
+/* Gauge Containers (FPS and Latency) */
 .gauge-container {
-    position: absolute;
+    position: relative; /* Change from absolute to relative for horizontal alignment */
     display: flex;
-    flex-direction: column;
+    flex-direction: column; /* Stack gauge and label vertically */
     align-items: center;
+    background: transparent; /* Ensure transparent background for gauge containers */
 }
 
-.fps-container {
-    top: 10px;
-    left: 10px;
-}
-
-.latency-container {
-    top: 10px;
-    right: 10px;
-}
-
+/* Gauge Styling */
 .gauge {
-    width: 80px;
-    height: 80px;
+    width: 100px; /* Uniform width for both gauges to fit within blue bar, matching screenshot */
+    height: 80px; /* Keep height consistent */
     display: flex;
     align-items: center;
     justify-content: center;
+    border-radius: 50%; /* Ensure circular appearance */
 }
 
+/* Generic Gauge Labels */
 .gauge-label {
     font-size: 18px;
     font-weight: bold;
     text-align: center;
-    margin-top: 5px;
+    margin-top: 5px; /* Space between gauge and label */
     background: linear-gradient(90deg, #007bff, #0056b3);
     -webkit-background-clip: text;
-    color: transparent;
-    text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.3);
+    color: transparent; /* Default color for general labels */
+    text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.3); /* Subtle shadow */
     letter-spacing: 1px;
     font-family: 'Arial', sans-serif;
 }
 
-.fps-label, .latency-label {
+/* FPS and Latency Labels */
+.fps-label,
+.latency-label {
     color: white;
     font-size: 14px;
     font-weight: bold;
+    text-align: center;
     text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.5);
 }
 
+/* Gauge Captions */
 .jqx-gauge-caption {
     font-size: 18px !important;
     font-weight: bold !important;
@@ -286,6 +376,20 @@ html, body {
     font-weight: bold;
 }
 
+/* FPS and Latency Labels */
+.fps-label,
+.latency-label {
+    color: white;
+    font-size: 14px;
+    font-weight: bold;
+    text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.5);
+    margin-top: 5px; /* Ensure label is under the gauge */
+}
+
+/* ========================================================================= */
+/* Utilities Styling                                                        */
+/* ========================================================================= */
+/* Platform Name Styling */
 #platformName {
     font-size: 32px;
     font-weight: bold;
@@ -304,45 +408,45 @@ html, body {
     display: inline-block;
 }
 
-
-/*--------------------------------------------------------------------------------------------------------------------------------------*/
-/*                                                               Utils                                                                 */
-/*--------------------------------------------------------------------------------------------------------------------------------------*/
-
+/* Custom Button Styling */
 .custom-button {
     display: flex;
     align-items: center;
     justify-content: center;
-    min-width: 140px; /* Ensures minimum width */
-    width: auto; /* Allows flexibility */
-    height: 45px;
-    padding: 10px 15px;
+    min-width: 140px;
+    width: auto;
+    height: 40px;
+    padding: 10px 20px;
     font-family: 'Arial', sans-serif;
     font-size: 16px;
     font-weight: bold;
     color: #ffffff;
-    background: linear-gradient(145deg, #007bff, #0056b3);
-    border: 2px solid #0056b3;
-    border-radius: 8px;
+    background: linear-gradient(45deg, #0071c5, #00308f); /* Intel blue gradient, kept for consistency */
+    border: 2px solid #00308f; /* Darker Intel blue for border */
+    border-radius: 8px; /* Slight rounding */
     cursor: pointer;
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1), 0 0 6px rgba(128, 128, 128, 0.2); /* Updated to grey shadow */
     overflow: hidden;
-    text-overflow: ellipsis; /* Truncate text if too long */
-    text-align: center; /* Keep text centered */
+    text-overflow: ellipsis;
+    text-align: center;
+    transition: all 0.3s ease;
 }
 
-
 .custom-button:hover {
-    background: #007bff;
-    color: #ffffff;
-    box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.15);
+    background: linear-gradient(45deg, #005eb8, #002d82); /* Darker gradient on hover */
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15), 0 0 8px rgba(128, 128, 128, 0.3); /* Enhanced grey shadow */
+    transform: translateY(-2px); /* Slight lift */
 }
 
 .custom-button:active {
-    background: #0056b3;
-    color: #ffffff;
-    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+    background: linear-gradient(45deg, #00308f, #001e5f); /* Even darker when clicked */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transform: translateY(1px); /* Slight press */
 }
+
+/* ========================================================================= */
+/* Controls Styling                                                         */
+/* ========================================================================= */
 
 /* Control Section */
 .control {
