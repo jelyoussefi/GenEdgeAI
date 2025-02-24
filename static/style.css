@@ -151,24 +151,61 @@ html, body {
     overflow: hidden; /* Ensure no overflow from gauges */
 }
 
-
-/* Chat Bot Message */
-.chatbot-message {
-    width: 100%; /* Full width of #chatbot-container */
-    height: 100%; /* Full height of #chatbot-container (adjusts to remaining space) */
-    max-width: 100%; /* Ensure it doesn’t exceed the container */
-    padding: 15px;
-    background: #ffffff; /* White background (kept for message readability) */
-    border: 1px solid #e0e0e0; /* Light grey border */
-    border-radius: 12px; /* Rounded corners */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle grey shadow */
+/* Existing Copy Button (for reference, unchanged unless needed) */
+.copy-button {
+    width: 32px;
+    height: 32px;
+    background: #f9f9f9;
+    border: 1px solid #e0e0e0;
+    border-radius: 50%;
     display: flex;
-    flex-direction: column; /* Stack content vertically for alignment */
-    align-items: flex-start; /* Align text to the top */
-    justify-content: flex-start; /* Stack from the top */
-    position: relative;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    transition: background 0.3s, transform 0.2s;
+}
+
+.copy-button:hover {
+    background: #e0e0e0;
+    transform: scale(1.1);
+}
+
+.copy-button:active {
+    background: #d0d0d0;
+    transform: scale(0.95);
+}
+
+.copy-button i {
+    font-size: 16px;
+    color: #2c3e50;
+}
+
+/* New styling for the copy button in .chatbot-message */
+.chatbot-message .copy-button {
+    position: absolute; /* Position it absolutely within .chatbot-message */
+    top: 10px; /* Offset from the top */
+    right: 10px; /* Offset from the right */
+    z-index: 10; /* Ensure it stays above other content */
+}
+
+/* Ensure .message-content has relative positioning to contain the absolute button */
+.chatbot-message {
+    position: relative; /* Allows absolute positioning of the copy button */
+    width: 100%;
+    height: 100%;
+    max-width: 100%;
+    padding: 20px;
+    background: #ffffff;
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
     transition: all 0.3s ease;
-    overflow-y: auto; /* Allow scrolling if content exceeds height */
+    overflow-y: auto;
 }
 
 /* Message Content */
@@ -240,35 +277,6 @@ html, body {
     font-style: italic;
 }
 
-/* Copy Button */
-.copy-button {
-    width: 24px;
-    height: 24px;
-    background: #f5f5f5; /* Light gray background */
-    border: 1px solid #e0e0e0;
-    border-radius: 50%; /* Circular button */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    box-shadow: 0 2px 4px rgba(128, 128, 128, 0.2); /* Grey shadow */
-    transition: background 0.3s, transform 0.2s;
-}
-
-.copy-button:hover {
-    background: #e0e0e0; /* Slightly darker on hover */
-    transform: scale(1.1);
-}
-
-.copy-button:active {
-    background: #d0d0d0; /* Even darker when clicked */
-    transform: scale(0.95);
-}
-
-.copy-button i {
-    font-size: 14px;
-    color: #666; /* Gray icon */
-}
 
 /* Send Button */
 #send-button {
