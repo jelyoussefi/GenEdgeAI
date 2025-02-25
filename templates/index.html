@@ -185,7 +185,7 @@
          * Clone chatbot templates for CPU, GPU, and NPU
          */
         function cloneChatbots() {
-            const types = ['cpu', 'gpu', 'npu'];
+            const types = ['cpu', 'gpu'];
             const template = $('#chatbot');
 
             types.forEach(type => {
@@ -275,7 +275,7 @@
          * Initialize all gauges on the page
          */
         function initGauges() {
-            const types = ['cpu', 'gpu', 'npu'];
+            const types = ['cpu', 'gpu'];
             initializeGauge('#cpuGauge', { width: 140, height: 140, hasPointer: true, offset: [0, 5], ranges: [[0, 50], [50, 80], [80, 100]] });
             initializeGauge('#powerGauge', { width: 140, height: 140, hasPointer: true, offset: [0, 5], ranges: [[0, 20], [20, 40], [40, 60]] });
 
@@ -333,14 +333,24 @@
             }
         });
 
+        function isMultipleDevices() {
+            return $('#multiDeviceToggle').hasClass('active');
+        }
+
         $('#multiDeviceToggle').on('click', function () {
-            $(this).text(isMultipleDevices() ? "Multiple Devices" : "Single Device");
             $(this).toggleClass('active');
             if (!isMultipleDevices()) {
                 currentStateList.forEach((state, index) => {
-                    updateDropdownSelection(state.chatbot_id, 'device');
+                    updateDropdownSelection(state.chatbot_id, 'device', false);
                     if (index !== 0) {
-                        stopChatbot(state.chatbot_id, false);
+                        stopChatbot(state.chatbot_id);
+                    }
+                });
+            }
+            else {
+                 currentStateList.forEach((state) => {
+                    if (!state.running) {
+                        startChatbot(state.chatbot_id);
                     }
                 });
             }

@@ -69,31 +69,34 @@ html, body {
 /* ========================================================================= */
 /* Chat Bot Styling                                                         */
 /* ========================================================================= */
+/* Chat Bots Main Container */
+#chatbots-container {
+    flex: 1;
+    width: 90vw;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow-y: auto;
+    height: 100%; /* Ensure it uses the full available height */
+}
+
 
 /* Chat Bots Container and Layout */
 #chatbots {
     height: 75%; /* Take 75% of #chatbots-container height */
-    width: 80%; /* Span 80% of container */
+    width: 100%;
     display: inline-flex;
     flex-direction: row;
     justify-content: center;
     align-items: flex-start;
     position: relative;
-}
-
-#chatbot-control {
-    width: 95%; /* Match #chatbot-container width */
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between; /* First button to left, last to right */
-    align-items: center;
-    margin: 10px; /* Keep some padding but remove button-specific margin */
-    gap: 0px; /* No extra space between buttons */
+    gap: 20px;
 }
 
 /* Chat Bots Container and Layout */
 .chatbot {
     width: 100%;
+    max-width: 1280px;
     height: 100%;
     display: flex;
     flex-direction: column;
@@ -113,36 +116,6 @@ html, body {
     transform: translateY(-2px); /* Slight lift on hover for a dynamic effect */
 }
 
-/* Chat Bots Main Container */
-#chatbots-container {
-    flex: 1;
-    width: 80vw;
-    max-width: 1280px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    overflow-y: auto;
-    height: 100%; /* Ensure it uses the full available height */
-}
-
-/* Chat Bot Container */
-#chatbot-container {
-    flex: 3; /* 75% of #chatbots-container height */
-    overflow-x: hidden; /* Remove horizontal scrollbar */
-    overflow-y: auto;
-    width: 100%; /* Full width for consistency */
-    display: flex;
-    flex-direction: column; /* Ensure vertical stacking */
-    align-items: flex-start; /* Align items to the top */
-    justify-content: flex-start; /* Stack from the top */
-    border: none; /* Remove border (no contour) */
-    border-radius: 16px; /* Keep rounded corners for a sexy contour */
-    background: transparent; /* Fully transparent background */
-    backdrop-filter: none; /* Remove glass effect */
-    box-shadow: none; /* Remove shadow (no contour) */
-    transition: all 0.3s ease;
-    height: 100%; /* Ensure it uses the full height of its flex allocation */
-}
 
 /* Chat Bot Metrics (FPS and Latency Gauges) */
 .chatbot-metrics {
@@ -156,6 +129,42 @@ html, body {
     background: transparent;
     overflow: hidden; /* Ensure no overflow from gauges */
 }
+
+
+/* Ensure .message-content has relative positioning to contain the absolute button */
+.chatbot-message {
+    position: relative; /* Allows absolute positioning of the copy button */
+    width: 100%;
+    height: 100%;
+    max-width: 100%;
+    padding: 20px;
+    background: #ffffff;
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    transition: all 0.3s ease;
+    overflow-y: auto;
+}
+
+
+#chatbot-control {
+    width: 95%; /* Match #chatbot-container width */
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between; /* First button to left, last to right */
+    align-items: center;
+    margin: 10px; /* Keep some padding but remove button-specific margin */
+    gap: 0px; /* No extra space between buttons */
+}
+
+
+
+
+
 
 /* Existing Copy Button (for reference, unchanged unless needed) */
 .copy-button {
@@ -195,25 +204,6 @@ html, body {
     z-index: 10; /* Ensure it stays above other content */
 }
 
-/* Ensure .message-content has relative positioning to contain the absolute button */
-.chatbot-message {
-    position: relative; /* Allows absolute positioning of the copy button */
-    width: 100%;
-    height: 100%;
-    max-width: 100%;
-    padding: 20px;
-    background: #ffffff;
-    border: 1px solid #e0e0e0;
-    border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    justify-content: flex-start;
-    transition: all 0.3s ease;
-    overflow-y: auto;
-}
-
 /* Existing .message-content styling */
 .message-content {
     flex: 1;
@@ -241,34 +231,36 @@ html, body {
 
 /* Chat Bot Prompt Container */
 #chatbot-prompt-container {
-    flex: 1; /* 25% of #chatbots-container height */
+    flex: 1; /* Still takes 25% of #chatbots-container height as per original design */
     width: 80%;
     max-width: 1280px;
     padding: 15px 20px; /* Increased padding for a more spacious feel */
     margin-top: 15px;
-    background: #ffffff; /* White background (kept for contrast) */
+    background: #ffffff; /* White background */
     border: 2px solid #e0e0e0; /* Light grey border for contour */
-    border-radius: 16px; /* Rounded corners for a sexy contour */
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1), 0 4px 8px rgba(128, 128, 128, 0.2); /* Grey shadowed contour */
+    border-radius: 16px; /* Rounded corners */
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1), 0 4px 8px rgba(128, 128, 128, 0.2); /* Grey shadow */
     display: flex;
-    align-items: flex-start; /* Align content to the top */
+    align-items: stretch; /* Stretch children to fill height */
     justify-content: space-between;
     transition: all 0.3s ease;
+    height: 100%; /* Ensure it takes full available height */
+    max-height: 25vh; /* Limit to a reasonable portion of viewport height, adjust as needed */
 }
 
 /* Chat Bot Prompt Inner */
 .chatbot-prompt-inner {
     width: 100%;
     display: flex;
-    align-items: flex-start; /* Align content to the top */
+    align-items: stretch; /* Stretch children (input and button) to fill height */
     justify-content: space-between;
     gap: 10px;
+    height: 100%; /* Ensure it takes full height of parent */
 }
 
 /* Chat Bot Input */
 #chatbot-input {
-    flex: 1;
-    height: auto; /* Remove fixed height to allow top alignment */
+    flex: 1; /* Still allows it to take available horizontal space */
     font-size: 16px;
     font-family: 'Arial', sans-serif;
     font-weight: 500;
@@ -278,14 +270,16 @@ html, body {
     border-radius: 12px; /* Rounded corners to match container */
     outline: none;
     box-shadow: none;
-    min-height: 40px;
-    max-height: 150px;
-    overflow-y: auto;
-    resize: none;
+    height: 100%; /* Set to full height of its container */
+    max-height: calc(100% - 20px); /* Account for padding/margins, adjust as needed */
+    min-height: 40px; /* Maintain a minimum height */
+    overflow-y: auto; /* Allow scrolling if content exceeds height */
     line-height: 1.5;
     white-space: pre-wrap;
-    align-self: flex-start; /* Align input to the top */
+    align-self: flex-start; /* Align to the top */
     transition: all 0.3s ease;
+    resize: none; /* Prevent manual resizing to maintain layout control */
+    padding: 10px; /* Add some internal padding for better usability */
 }
 
 #chatbot-input::placeholder {
@@ -471,13 +465,25 @@ html, body {
     align-items: center;
 }
 
+[id^="deviceDropdown-"] {
+    color: red !important; /* Set text color to red */
+    font-weight: bold; /* Bold text for emphasis */
+}
+
 #general-control {
     padding-bottom: 40px;
 }
 
+#multiDeviceToggle, {
+    min-width: 180px; /* Ensures both buttons have a larger width */
+    padding: 10px 20px; /* Adds padding for better appearance */
+    text-align: center; /* Ensures text stays centered */
+}
+
+/* Active Dashboard Button Style */
 #multiDeviceToggle.active {
-    background: linear-gradient(145deg, #28a745, #218838);
+    background: linear-gradient(145deg, #28a745, #218838); /* Green Gradient */
     border: 2px solid #218838;
-    box-shadow: 0px 0px 10px rgba(40, 167, 69, 0.8);
-    transform: scale(1.05);
+    box-shadow: 0px 0px 10px rgba(40, 167, 69, 0.8); /* Soft glow effect */
+    transform: scale(1.05); /* Slightly enlarge for effect */
 }

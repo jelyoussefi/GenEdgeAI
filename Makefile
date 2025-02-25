@@ -4,8 +4,7 @@ CURRENT_DIR := $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
 PORT ?= 80
 
 # Default Models and Precisions
-MODELS ?= TinyLlama/TinyLlama-1.1B-Chat-v1.0
-#deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B
+MODELS ?= TinyLlama/TinyLlama-1.1B-Chat-v1.0 deepseek-ai/DeepSeek-R1-Distill-Llama-8B
 PRECISIONS ?= FP16 INT8 INT4
 
 
@@ -45,7 +44,7 @@ build:
 	@docker build ${DOCKER_BUILD_PARAMS}
 
 run: build
-	@echo "🚀 Running Vision Edge AI demo..."
+	@echo "🚀 Running Gen Edge AI demo..."
 	@docker run $(DOCKER_RUN_PARAMS) bash -c "python3 ./app.py --port $(PORT)"
 
 bash: build

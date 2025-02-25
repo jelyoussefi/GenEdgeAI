@@ -24,27 +24,24 @@
         <hr class="separator">
         <div id="chatbots">
             <div class="chatbot" id="chatbot" style="display: none;">
-                <div id="chatbot-container">
-                    <div class="chatbot-metrics">
-                        <div class="gauge-container">
-                            <div id="fpsGauge" class="gauge"></div>
-                            <div class="gauge-label fps-label">Tokens /s</div>
-                        </div>
-                        <div class="gauge-container">
-                            <div id="latencyGauge" class="gauge"></div>
-                            <div class="gauge-label latency-label">Latency</div>
-                        </div>
+                <div class="chatbot-metrics">
+                    <div class="gauge-container">
+                        <div id="fpsGauge" class="gauge"></div>
+                        <div class="gauge-label fps-label">Tokens /s</div>
                     </div>
-                    <div class="chatbot-message">
-                        <button class="copy-button" title="Copy message">
-                            <i class="fas fa-copy"></i> <!-- Using Font Awesome copy icon -->
-                        </button>
-                        <div class="message-content" id="message-content">
-                            <!-- Generated chatbot message will be inserted here dynamically -->
-                        </div>
+                    <div class="gauge-container">
+                        <div id="latencyGauge" class="gauge"></div>
+                        <div class="gauge-label latency-label">Latency</div>
                     </div>
                 </div>
-                <!-- Control Section -->
+                <div class="chatbot-message">
+                    <button class="copy-button" title="Copy message">
+                        <i class="fas fa-copy"></i> <!-- Using Font Awesome copy icon -->
+                    </button>
+                    <div class="message-content" id="message-content">
+                        <!-- Generated chatbot message will be inserted here dynamically -->
+                    </div>
+                </div>
                 <div id="chatbot-control" class="control mt-3">
                     <!-- Dropdowns for models, devices, and precision -->
                     <div class="dropdown">
