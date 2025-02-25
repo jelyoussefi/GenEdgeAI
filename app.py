@@ -35,8 +35,7 @@ class ChatbotApp:
 		self.load_models()
 		
 		self.init_routes()
-		print(f"Available models: {self.models}")
-		print(f"Available precisions: {self.precisions}")
+		
 
 	def load_models(self):
 		"""Scan /opt/models/ to populate available models and precisions."""
@@ -70,7 +69,7 @@ class ChatbotApp:
 
 	def stop_chatbot(self, chatbot_id):
 		with self.cv:
-			if chatbot_id in self.chatbots:
+			if chatbot_id in self.chatbots and self.chatbots[chatbot_id].running:
 				try:
 					chatbot = self.chatbots.pop(chatbot_id)
 					chatbot.stop()
@@ -88,9 +87,9 @@ class ChatbotApp:
 		def home():
 			platform_name = get_gpu_model().split("[")[0].replace("Intel Corporation", "").strip()
 			devices = list_devices()
-			default_device = "CPU"
-			default_model = self.models[0] if self.models else "TinyLlama-1.1B-Chat-v1.0"
-			default_precision = "FP16" if "FP16" in self.precisions else self.precisions[0] if self.precisions else "FP16"
+			default_device = devices[0]
+			default_model = self.models[0] 
+			default_precision = self.precisions[0]
 
 			return render_template(
 				'index.html',
@@ -107,13 +106,40 @@ class ChatbotApp:
 		def start_chatbot():
 			data = request.get_json()
 			chatbot_id = data.get('chatbot_id')
-			device = data.get('device', 'CPU')
-			model = data.get('model', self.models[0] if self.models else "TinyLlama-1.1B-Chat-v1.0")
-			precision = data.get('precision', "FP16")
+			device = data.get('device')
+			model = data.get('model')
+			precision = data.get('precision')
 
 			if self.start_chatbot(chatbot_id, device, model, precision):
 				return jsonify({'message': f'Chatbot {chatbot_id} started successfully'})
 			return jsonify({'error': f'Failed to start chatbot {chatbot_id}'}), 500
+
+
+		@app.route('/stop_chatbot', methods=['POST'])
+		def stop_chatbot():
+			data = request.get_json()
+			chatbot_id = data.get('chatbot_id')
+			
+			if self.stop_chatbot(chatbot_id):
+				return jsonify({'message': f'Chatbot {chatbot_id} stopped successfully'})
+			return jsonify({'error': f'Failed to stop chatbot {chatbot_id}'}), 500
+
+		@app.route('/update_chatbot', methods=['POST'])
+		def update_chatbot():
+			data = request.get_json()
+			chatbot_id = data.get('chatbot_id')
+
+			if chatbot_id in self.chatbots:
+				device = data.get('device')
+				model = data.get('model')
+				precision = data.get('precision')
+
+				self.stop_chatbot(chatbot_id)
+				if self.start_chatbot(chatbot_id, device, model, precision):
+					return jsonify({'message': f'Chatbot {chatbot_id} updated successfully'})
+
+			return jsonify({'error': f'Failed to update chatbot {chatbot_id}'}), 500
+
 
 		@app.route('/prompt_chatbot', methods=['POST'])
 		def prompt_chatbot():

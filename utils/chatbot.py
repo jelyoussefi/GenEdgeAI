@@ -69,7 +69,7 @@ class Chatbot:
 
 	def stop(self):
 		try:
-			self.pipeline.stop_chat()
+			self.pipeline.finish_chat()
 			self.running = False
 			# Reset metrics
 			self.token_count = 0

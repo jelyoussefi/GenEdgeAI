@@ -167,9 +167,8 @@
                 state[type] = value;
                 element.hide();
 
-                const url = type === 'precision' ? '/set_precision' : '/start_chatbot';
                 $.ajax({
-                    url: url,
+                    url: '/update_chatbot',
                     type: 'POST',
                     contentType: 'application/json',
                     data: JSON.stringify(state),
