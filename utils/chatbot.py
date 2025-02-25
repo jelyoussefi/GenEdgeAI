@@ -1,116 +1,65 @@
+# chatbot.py
 import time
 from threading import Thread, Condition
-from queue import Queue, Empty, Full
-from openvino_genai import LLMPipeline
+import openvino_genai 
 
 class Chatbot:
-    def __init__(self, chatbot_id, device, model_path, precision="FP16"):
-        self.chatbot_id = chatbot_id
-        self.device = device
-        self.model_path = model_path
-        self.precision = precision
-        self.running = False
-        self.paused = False
-        self.thread = None
-        self.queue = Queue(maxsize=100)
-        self.cv = Condition()
-        self.pipeline = None
-        self.fps = 0.0
-        self.latency = 0.0
-        self._token_count = 0
-        self._last_time = time.time()
-        self.load_model()
+	def __init__(self, chatbot_id, device, model_path, precision, socketio):
+		self.chatbot_id = chatbot_id
+		self.device = device
+		self.model_path = model_path
+		self.precision = precision
+		self.socketio = socketio
+		self.running = False
+		self.cv = Condition()
+		self.message_buffer = ""  # Buffer to store streamed message
+		self.load_model()
 
-    def load_model(self):
-        """Load OpenVINO GenAI model."""
-        try:
-            self.pipeline = LLMPipeline(self.model_path, self.device)
-            print(f"Chatbot {self.chatbot_id} loaded model on {self.device}")
-        except Exception as e:
-            print(f"Error loading model for chatbot {self.chatbot_id}: {e}")
+	def load_model(self):
+		try:
+			self.pipeline = openvino_genai.LLMPipeline(self.model_path, self.device)
+			print(f"Chatbot {self.chatbot_id} loaded model on {self.device}")
+			self.config = openvino_genai.GenerationConfig()
+			self.config.max_new_tokens = 1000
+		except Exception as e:
+			print(f"Error loading model for chatbot {self.chatbot_id}: {e}")
 
-    def start(self):
-        """Start chatbot inference thread."""
-        with self.cv:
-            if not self.running:
-                self.running = True
-                self.paused = False
-                self.thread = Thread(target=self.run)
-                self.thread.daemon = True
-                self.thread.start()
-                return True
-        return False
+	def streamer(self, subword):
+		# Append subword to buffer and emit it via SocketIO
+		self.message_buffer += subword
+		self.socketio.emit('chatbot_stream', {
+			'chatbot_id': self.chatbot_id,
+			'subword': subword
+		})
+		print(subword, end='', flush=True)
+		return openvino_genai.StreamingStatus.RUNNING
 
-    def stop(self):
-        """Stop chatbot inference thread."""
-        with self.cv:
-            if self.running:
-                self.running = False
-                self.paused = False
-                if self.thread and self.thread.is_alive():
-                    self.thread.join()
-                self.queue.queue.clear()
-                self.cv.notify_all()
-                return True
-        return False
+	def start(self):
+		try:
+			self.pipeline.start_chat()
+			self.running = True
+			return True
+		except Exception as e:
+			print(f"Starting chat failed for {self.chatbot_id}: {e}")
+			return False
 
-    def run(self):
-        """Chatbot processing loop with benchmarking."""
-        try:
-            while self.running:
-                with self.cv:
-                    if not self.running:
-                        break
-                    while self.paused:
-                        self.cv.wait(timeout=0.1)
+	def stop(self):  # Corrected method name from 'start' to 'stop'
+		try:
+			self.pipeline.stop_chat()
+			self.running = False
+			return True
+		except Exception as e:
+			print(f"Stopping chat failed for {self.chatbot_id}: {e}")
+			return False
 
-                try:
-                    prompt = self.queue.get(timeout=0.5)
-                    if prompt:
-                        start_time = time.time()
-                        response = self.generate_text(prompt)
-                        end_time = time.time()
-                        
-                        # Calculate latency (in ms)
-                        self.latency = (end_time - start_time) * 1000
-                        # Calculate FPS (tokens per second)
-                        token_count = len(response.split())  # Rough token count
-                        self._token_count += token_count
-                        elapsed_time = end_time - self._last_time
-                        if elapsed_time > 1.0:  # Update FPS every second
-                            self.fps = self._token_count / elapsed_time
-                            self._token_count = 0
-                            self._last_time = end_time
-                        
-                        self.queue.put(response, timeout=0.001)
-                except Empty:
-                    continue
-        finally:
-            self.running = False
+	def prompt(self, prompt):
+		self.message_buffer = ""  # Reset buffer for new prompt
+		try:
+			self.pipeline.generate(prompt, self.config, self.streamer)
+			return True
+		except Exception as e:
+			print(f"Generating answer failed for {self.chatbot_id}: {e}")
+			return False
 
-    def generate_text(self, prompt):
-        """Generate text response using OpenVINO GenAI."""
-        try:
-            response = self.pipeline.generate(prompt, max_new_tokens=100)
-            return response
-        except Exception as e:
-            print(f"Error in chatbot inference for {self.chatbot_id}: {e}")
-            return "Error generating response"
-
-    def send_prompt(self, prompt):
-        """Send a prompt to the chatbot."""
-        try:
-            self.queue.put(prompt, timeout=0.5)
-        except Full:
-            print("Chatbot queue is full. Dropping request.")
-
-    def get_response(self):
-        """Retrieve the chatbot's generated response."""
-        try:
-            return self.queue.get(timeout=0.5)
-        except Empty:
-            return None
-
-    def get_benchmark_data(self):
-        """Return FPS and latency for benchmarking."""
-        return self.fps, self.latency
+	def get_message(self):
+		return self.message_buffer

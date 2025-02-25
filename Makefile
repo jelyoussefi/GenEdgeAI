@@ -4,7 +4,8 @@ CURRENT_DIR := $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
 PORT ?= 80
 
 # Default Models and Precisions
-MODELS ?= TinyLlama/TinyLlama-1.1B-Chat-v1.0 deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B
+MODELS ?= TinyLlama/TinyLlama-1.1B-Chat-v1.0
+#deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B
 PRECISIONS ?= FP16 INT8 INT4
 
 

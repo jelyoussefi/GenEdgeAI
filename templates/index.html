@@ -28,7 +28,7 @@
     <script src="https://jqwidgets.com/public/jqwidgets/jqxcore.js"></script>
     <script src="https://jqwidgets.com/public/jqwidgets/jqxdraw.js"></script>
     <script src="https://jqwidgets.com/public/jqwidgets/jqxgauge.js"></script>
-
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.5/socket.io.min.js"></script>
     <script>
         // Global state for chatbots
         const currentStateList = [];
@@ -190,6 +190,7 @@
 
             types.forEach(type => {
                 const clone = template.clone(true).attr('id', type).hide();
+                clone.find('#message-content').attr('id', `message-content-${type}`);
                 clone.find('#fpsGauge').attr('id', `fpsGauge-${type}`);
                 clone.find('#latencyGauge').attr('id', `latencyGauge-${type}`);
                 clone.find('#modelDropdown').attr('id', `modelDropdown-${type}`);
@@ -370,7 +371,26 @@
             if (message) {
                 console.log('Sending message:', message);
                 $('#chatbot-input').val(''); // Clear input after sending
-                toggleSendButton(); // Ensure button is disabled after clearing
+                toggleSendButton();
+                
+                // Clear previous messages in all running chatbots
+                currentStateList.forEach(state => {
+                    if (state.running) {
+                        $(`#${state.chatbot_id} .message-content`).text('');
+                        $.ajax({
+                            url: '/prompt_chatbot',
+                            type: 'POST',
+                            contentType: 'application/json',
+                            data: JSON.stringify({ chatbot_id: state.chatbot_id, prompt: message }),
+                            success: (response) => {
+                                console.log(`Prompt successfully sent to ${state.chatbot_id}`);
+                            },
+                            error: (xhr) => {
+                                console.error(`Failed to send prompt to ${state.chatbot_id}: ${xhr.responseText}`);
+                            }
+                        });
+                    }
+                });
             }
         });
 
@@ -379,6 +399,20 @@
                 e.preventDefault();
                 $('#send-button').click();
             }
+        });
+
+        const socket = io.connect('http://' + document.domain + ':' + location.port);
+
+        // Handle streamed chatbot responses
+        socket.on('chatbot_stream', function(data) {
+            const chatbotId = data.chatbot_id;
+            const subword = data.subword;
+            const messageContent = $(`#message-content-${chatbotId}`)
+            
+            // Append the subword to the existing content
+            messageContent.text(messageContent.text() + subword);
+            // Optional: Scroll to the bottom if there's a container with overflow
+            messageContent.scrollTop(messageContent[0].scrollHeight);
         });
 
         // Document Ready Initialization

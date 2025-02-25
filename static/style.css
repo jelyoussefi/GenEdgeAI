@@ -208,19 +208,29 @@ html, body {
     overflow-y: auto;
 }
 
-/* Message Content */
+/* Existing .message-content styling */
 .message-content {
     flex: 1;
-    font-size: 16px;
-    font-family: 'Arial', sans-serif;
-    font-weight: 500;
+    font-size: 16px; /* Match your request and existing CSS */
+    font-family: 'Arial', sans-serif; /* Match your request and existing CSS */
+    font-weight: 500; /* Match your request and existing CSS */
     color: #333;
     word-wrap: break-word; /* Ensure long text wraps */
     overflow-wrap: break-word; /* Alternative for older browsers */
     height: auto; /* Adjust height based on content */
     display: flex;
-    align-items: flex-start; /* Align text to the top */
-    flex-direction: column; /* Stack text vertically if needed */
+    align-items: flex-start; /* Keep left-aligned as per your request and my default */
+    flex-direction: column; /* Stack text vertically */
+    padding-right: 50px; /* Space for the copy button */
+    text-align: left; /* Explicitly set to left-aligned to match your screenshot and request */
+    line-height: 1.5; /* Improve readability with better line spacing */
+    white-space: pre-wrap; /* Preserve line breaks and spaces from streamed content */
+}
+
+/* Optional: Add justification if you prefer full justification instead of left-alignment */
+.message-content.justified {
+    text-align: justify; /* Use this class if you want full justification */
+    text-justify: inter-word; /* Ensures words are spaced evenly for justification */
 }
 
 /* Chat Bot Prompt Container */

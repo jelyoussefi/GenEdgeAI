@@ -79,3 +79,5 @@ RUN for model in ${MODELS}; do \
                 --trust-remote-code "$output_dir"; \
         done; \
     done
+RUN pip install --break-system-packages --pre -U openvino-genai --extra-index-url https://storage.openvinotoolkit.org/simple/wheels/nightly 
+RUN pip install  --break-system-packages flask-socketio

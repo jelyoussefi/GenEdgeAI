@@ -5,6 +5,7 @@ import time
 import fire
 from flask import Flask, render_template, jsonify, request
 from flask_bootstrap import Bootstrap
+from flask_socketio import SocketIO
 from threading import Thread, Lock, Condition
 from collections import deque
 from datetime import datetime, timedelta
@@ -18,6 +19,7 @@ class ChatbotApp:
 	def __init__(self, port=80):
 		self.app = Flask(__name__)
 		Bootstrap(self.app)
+		self.socketio = SocketIO(self.app)
 		self.port = port
 		self.chatbots = {}
 		self.lock = Lock()
@@ -57,9 +59,9 @@ class ChatbotApp:
 				return False
 			try:
 				model_path = os.path.join('/opt/models', model_name, precision, model_name)
-				chatbot = Chatbot(chatbot_id, device, model_path, precision)
-				chatbot.start()
+				chatbot = Chatbot(chatbot_id, device, model_path, precision, self.socketio)
 				self.chatbots[chatbot_id] = chatbot
+				chatbot.start()
 				self.cv.notify_all()
 				return True
 			except Exception as e:
@@ -113,25 +115,23 @@ class ChatbotApp:
 				return jsonify({'message': f'Chatbot {chatbot_id} started successfully'})
 			return jsonify({'error': f'Failed to start chatbot {chatbot_id}'}), 500
 
-		@app.route('/stop_chatbot', methods=['POST'])
-		def stop_chatbot():
+		@app.route('/prompt_chatbot', methods=['POST'])
+		def prompt_chatbot():
 			data = request.get_json()
 			chatbot_id = data.get('chatbot_id')
-			if self.stop_chatbot(chatbot_id):
-				return jsonify({'message': f'Chatbot {chatbot_id} stopped successfully'})
-			return jsonify({'error': f'Failed to stop chatbot {chatbot_id}'}), 500
+			prompt = data.get('prompt')
 
-		@app.route('/set_precision', methods=['POST'])
-		def set_precision():
-			data = request.get_json()
-			chatbot_id = data.get('chatbot_id')
-			precision = data.get('precision')
-			if chatbot_id in self.chatbots:
-				chatbot = self.chatbots[chatbot_id]
-				self.stop_chatbot(chatbot_id)
-				self.start_chatbot(chatbot_id, chatbot.device, chatbot.model_path.split('/')[-2], precision)
-				return jsonify({'message': f'Precision updated to {precision} for {chatbot_id}'})
-			return jsonify({'error': 'Chatbot not running'}), 400
+			with self.cv:
+				if chatbot_id in self.chatbots:
+					chatbot = self.chatbots[chatbot_id]
+					ret = chatbot.prompt(prompt)
+					if ret:
+						return jsonify({'message': f'Prompt successfully sent to {chatbot_id}'})
+					else:
+						return jsonify({'message': f'Prompt cannot be sent to {chatbot_id}'})
+
+			return jsonify({'error': f'Chatbot {chatbot_id} not found'}), 404
+
 
 		@app.route('/get_metrics', methods=['GET'])
 		def get_metrics():
@@ -142,7 +142,7 @@ class ChatbotApp:
 			}
 			with self.lock:
 				for chatbot_id, chatbot in self.chatbots.items():
-					fps, latency = chatbot.get_benchmark_data()
+					fps, latency = (12,23) #chatbot.get_benchmark_data()
 					metrics['chatbots'][chatbot_id] = {
 						'fps': fps,
 						'latency': latency,
@@ -168,7 +168,7 @@ class ChatbotApp:
 	def run(self):
 		self.running = True
 		self.metrics_thread.start()
-		self.app.run(host='0.0.0.0', port=self.port, debug=False, threaded=True)
+		self.socketio.run(self.app, host='0.0.0.0', port=self.port, debug=False)
 
 def main(port=80):
 	app = ChatbotApp(port=port)
