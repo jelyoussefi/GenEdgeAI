@@ -91,6 +91,7 @@ html, body {
     gap: 0px; /* No extra space between buttons */
 }
 
+/* Chat Bots Container and Layout */
 .chatbot {
     width: 100%;
     height: 100%;
@@ -101,6 +102,15 @@ html, body {
     background: transparent;
     border-radius: 8px;
     position: relative;
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.15), 0 2px 6px rgba(128, 128, 128, 0.2); /* Subtle grey shadow for a nice contour */
+    border: 4px solid rgba(0, 128, 0, 0.2); /* Light blue semi-transparent border for contour */
+    transition: box-shadow 0.3s ease, transform 0.2s ease; /* Smooth transition for hover effects */
+    padding: 10px 20px;
+}
+
+.chatbot:hover {
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2), 0 4px 8px rgba(128, 128, 128, 0.3); /* Enhanced shadow on hover */
+    transform: translateY(-2px); /* Slight lift on hover for a dynamic effect */
 }
 
 /* Chat Bots Main Container */
@@ -125,7 +135,6 @@ html, body {
     flex-direction: column; /* Ensure vertical stacking */
     align-items: flex-start; /* Align items to the top */
     justify-content: flex-start; /* Stack from the top */
-    margin: 10px;
     border: none; /* Remove border (no contour) */
     border-radius: 16px; /* Keep rounded corners for a sexy contour */
     background: transparent; /* Fully transparent background */
@@ -143,11 +152,8 @@ html, body {
     flex-direction: row; /* Align elements horizontally */
     align-items: center; /* Center vertically within its height */
     justify-content: space-between; /* Evenly distribute gauges uniformly with space between */
-    margin-bottom: 10px; /* Space before .chatbot-message */
-    padding: 10px 20px; /* Add horizontal padding for spacing, keep vertical at 10px */
-    border-radius: 12px; /* Rounded corners to match .chatbot-message */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle grey shadow for consistency */
-    position: relative; /* For potential future positioning if needed */
+    padding: 10px ; /* Add horizontal padding for spacing, keep vertical at 10px */
+    background: transparent;
     overflow: hidden; /* Ensure no overflow from gauges */
 }
 
@@ -287,7 +293,6 @@ html, body {
     font-style: italic;
 }
 
-
 /* Send Button */
 #send-button {
     width: 32px;
@@ -363,13 +368,18 @@ html, body {
     font-size: 18px;
     font-weight: bold;
     text-align: center;
-    margin-top: 5px; /* Space between gauge and label (adjust as needed) */
     background: linear-gradient(90deg, #007bff, #0056b3);
     -webkit-background-clip: text;
     color: transparent; /* Default gradient text */
     text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.3); /* Subtle shadow */
     letter-spacing: 1px;
     font-family: 'Arial', sans-serif;
+}
+
+/* Gauge Captions */
+.jqx-gauge-caption {
+    font-size: 18px !important;
+    font-weight: bold !important;
 }
 
 /* FPS and Latency Labels */
@@ -380,23 +390,20 @@ html, body {
     font-weight: bold;
     text-align: center;
     text-shadow: none; /* Remove shadow for clean look on white background */
-    margin-top: 5px; /* Consistent spacing below gauge */
-}
-
-/* Gauge Captions */
-.jqx-gauge-caption {
-    font-size: 18px !important;
-    font-weight: bold !important;
 }
 
 [id^="fpsGauge"] .jqx-gauge-caption,
 [id^="latencyGauge"] .jqx-gauge-caption {
-    font-size: 18px !important;
+    font-size: 14px !important;
     font-weight: bold;
+    position: 'center';
 }
+
+
 /* ========================================================================= */
 /* Utilities Styling                                                        */
 /* ========================================================================= */
+
 /* Platform Name Styling */
 #platformName {
     font-size: 32px;
@@ -424,7 +431,6 @@ html, body {
     min-width: 140px;
     width: auto;
     height: 40px;
-    padding: 10px 20px;
     font-family: 'Arial', sans-serif;
     font-size: 16px;
     font-weight: bold;
@@ -463,7 +469,6 @@ html, body {
     flex-direction: row;
     justify-content: center;
     align-items: center;
-    padding-top: 10px;
 }
 
 #general-control {

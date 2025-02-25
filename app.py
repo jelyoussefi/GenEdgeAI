@@ -132,7 +132,6 @@ class ChatbotApp:
 
 			return jsonify({'error': f'Chatbot {chatbot_id} not found'}), 404
 
-
 		@app.route('/get_metrics', methods=['GET'])
 		def get_metrics():
 			metrics = {
@@ -142,10 +141,10 @@ class ChatbotApp:
 			}
 			with self.lock:
 				for chatbot_id, chatbot in self.chatbots.items():
-					fps, latency = (12,23) #chatbot.get_benchmark_data()
+					throughput, latency = chatbot.get_benchmark_data()  # Get real values from chatbot
 					metrics['chatbots'][chatbot_id] = {
-						'fps': fps,
-						'latency': latency,
+						'fps': round(throughput, 2),  # Throughput in tokens per second
+						'latency': round(latency, 2),  # Latency in ms per token
 						'model': chatbot.model_path.split('/')[-2],
 						'precision': chatbot.precision,
 						'device': chatbot.device

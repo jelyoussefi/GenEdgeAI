@@ -29,6 +29,7 @@
     <script src="https://jqwidgets.com/public/jqwidgets/jqxdraw.js"></script>
     <script src="https://jqwidgets.com/public/jqwidgets/jqxgauge.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.5/socket.io.min.js"></script>
+
     <script>
         // Global state for chatbots
         const currentStateList = [];
@@ -174,7 +175,7 @@
                     data: JSON.stringify(state),
                     success: () => {
                         updateDropdownSelection(chatbotId, type);
-                        element.show(); // Fixed typo from 'how' to 'show'
+                        element.show();
                     },
                     error: () => console.error(`Failed to update ${chatbotId}`)
                 });
@@ -280,8 +281,8 @@
             initializeGauge('#powerGauge', { width: 140, height: 140, hasPointer: true, offset: [0, 5], ranges: [[0, 20], [20, 40], [40, 60]] });
 
             types.forEach(type => {
-                initializeGauge(`#fpsGauge-${type}`, { width: 80, height: 80, hasPointer: false, ranges: [] });
-                initializeGauge(`#latencyGauge-${type}`, { width: 80, height: 80, hasPointer: false, ranges: [] });
+                initializeGauge(`#fpsGauge-${type}`, { width: 60, height: 60, hasPointer: false, position : 'top', ranges: [] });
+                initializeGauge(`#latencyGauge-${type}`, { width: 60, height: 60, hasPointer: false, position : 'top', ranges: [] });
             });
         }
 
@@ -297,18 +298,6 @@
                     const powerData = Math.round(data.power_data ?? 0);
                     updateGaugeCaption("#cpuGauge", cpuPercent, initialCaptionConfigs('cpu').cpu);
                     updateGaugeCaption("#powerGauge", powerData, initialCaptionConfigs('cpu').power);
-
-                    if (data.chatbots) {
-                        Object.keys(data.chatbots).forEach(chatbotId => {
-                            const metrics = data.chatbots[chatbotId];
-                            if (metrics) {
-                                const fps = Math.round(metrics.fps ?? 0);
-                                const latency = Math.round(metrics.latency ?? 0);
-                                updateGaugeCaption(`#fpsGauge-${chatbotId}`, fps, initialCaptionConfigs(chatbotId).fps);
-                                updateGaugeCaption(`#latencyGauge-${chatbotId}`, latency, initialCaptionConfigs(chatbotId).latency);
-                            }
-                        });
-                    }
                 },
                 error: function () {
                     console.error("Failed to fetch metrics data");
@@ -407,12 +396,17 @@
         socket.on('chatbot_stream', function(data) {
             const chatbotId = data.chatbot_id;
             const subword = data.subword;
-            const messageContent = $(`#message-content-${chatbotId}`)
+            const latency =  Math.round(data.latency_ms_per_token);  // In ms per token
+            const throughput =  Math.round(data.throughput_tokens_per_sec);  // In tokens per second
+            const messageContent = $(`#message-content-${chatbotId}`);
             
             // Append the subword to the existing content
             messageContent.text(messageContent.text() + subword);
-            // Optional: Scroll to the bottom if there's a container with overflow
             messageContent.scrollTop(messageContent[0].scrollHeight);
+
+            // Update latency and FPS gauges with streamed data
+            updateGaugeCaption(`#latencyGauge-${chatbotId}`, latency, initialCaptionConfigs(chatbotId).latency);
+            updateGaugeCaption(`#fpsGauge-${chatbotId}`, throughput, initialCaptionConfigs(chatbotId).fps);
         });
 
         // Document Ready Initialization
