@@ -6,11 +6,10 @@ from collections import deque
 import openvino_genai 
 
 class Chatbot:
-    def __init__(self, chatbot_id, device, model_path, precision, socketio):
+    def __init__(self, chatbot_id, device, model_path, socketio):
         self.chatbot_id = chatbot_id
         self.device = device
         self.model_path = model_path
-        self.precision = precision
         self.socketio = socketio
         self.running = False
         self.cv = Condition()
@@ -24,14 +23,14 @@ class Chatbot:
         # History deques to store metrics for averaging
         self.latency_history = deque(maxlen=100)  # Latency in ms per token
         self.throughput_history = deque(maxlen=100)  # Throughput in tokens per second
-        self.load_model()
 
     def load_model(self):
         try:
+            print(f"Chatbot {self.chatbot_id} loadeding model on {self.device}")
             self.pipeline = openvino_genai.LLMPipeline(self.model_path, self.device)
-            print(f"Chatbot {self.chatbot_id} loaded model on {self.device}")
             self.config = openvino_genai.GenerationConfig()
             self.config.max_new_tokens = 1000
+            print(f"Chatbot {self.chatbot_id} loaded model on {self.device}")
         except Exception as e:
             print(f"Error loading model for chatbot {self.chatbot_id}: {e}")
 
@@ -95,6 +94,9 @@ class Chatbot:
 
     def run(self):
         try:
+
+            self.load_model()
+
             self.pipeline.start_chat()
 
             while self.running:
@@ -111,10 +113,11 @@ class Chatbot:
                 self.throughput = 0  
                 
                 # Generate response and stream subwords
-                self.pipeline.generate(prompt, self.config, self.streamer)
+                ret = self.pipeline.generate(prompt, self.config, self.streamer)
+                print(ret)
                 
         finally:
-            self.pipeline.finish_chat()
+            #self.pipeline.finish_chat()
             self.running = False
 
     def prompt(self, prompt):

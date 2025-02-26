@@ -16,11 +16,12 @@ log = logging.getLogger('werkzeug')
 log.setLevel(logging.ERROR)
 
 class ChatbotApp:
-	def __init__(self, port=80):
+	def __init__(self, port=80, models_dir="/workspace/models"):
 		self.app = Flask(__name__)
 		Bootstrap(self.app)
 		self.socketio = SocketIO(self.app)
 		self.port = port
+		self.models_dir = models_dir
 		self.chatbots = {}
 		self.lock = Lock()
 		self.cv = Condition()
@@ -38,15 +39,14 @@ class ChatbotApp:
 		
 
 	def load_models(self):
-		"""Scan /opt/models/ to populate available models and precisions."""
-		models_dir = '/opt/models/'
-		if os.path.exists(models_dir):
-			model_dirs = [d for d in os.listdir(models_dir) if os.path.isdir(os.path.join(models_dir, d))]
+		
+		if os.path.exists(self.models_dir):
+			model_dirs = [d for d in os.listdir(self.models_dir) if os.path.isdir(os.path.join(self.models_dir, d))]
 			self.models = sorted(model_dirs)
 			
 			precision_set = set()
 			for model in self.models:
-				model_path = os.path.join(models_dir, model)
+				model_path = os.path.join(self.models_dir, model)
 				precisions = [p for p in os.listdir(model_path) if os.path.isdir(os.path.join(model_path, p))]
 				precision_set.update(precisions)
 			self.precisions = sorted(precision_set)
@@ -57,8 +57,8 @@ class ChatbotApp:
 			if chatbot_id in self.chatbots and self.chatbots[chatbot_id].running:
 				return False
 			try:
-				model_path = os.path.join('/opt/models', model_name, precision, model_name)
-				chatbot = Chatbot(chatbot_id, device, model_path, precision, self.socketio)
+				model_path = os.path.join(self.models_dir, model_name, precision, model_name)
+				chatbot = Chatbot(chatbot_id, device, model_path, self.socketio)
 				self.chatbots[chatbot_id] = chatbot
 				chatbot.start()
 				self.cv.notify_all()
@@ -167,13 +167,7 @@ class ChatbotApp:
 			with self.lock:
 				for chatbot_id, chatbot in self.chatbots.items():
 					throughput, latency = chatbot.get_benchmark_data()  # Get real values from chatbot
-					metrics['chatbots'][chatbot_id] = {
-						'fps': round(throughput, 2),  # Throughput in tokens per second
-						'latency': round(latency, 2),  # Latency in ms per token
-						'model': chatbot.model_path.split('/')[-2],
-						'precision': chatbot.precision,
-						'device': chatbot.device
-					}
+					
 			return jsonify(metrics)
 
 	def metrics_handler(self):
@@ -194,8 +188,8 @@ class ChatbotApp:
 		self.metrics_thread.start()
 		self.socketio.run(self.app, host='0.0.0.0', port=self.port, debug=False)
 
-def main(port=80):
-	app = ChatbotApp(port=port)
+def main(port=80, models_dir="/workspace/models/"):
+	app = ChatbotApp(port=port, models_dir=models_dir)
 	app.run()
 
 if __name__ == "__main__":

@@ -29,7 +29,8 @@ RUN pip3 install --break-system-packages \
     fire \
     psutil \
     openvino-dev[onnx] \
-    zeroconf
+    zeroconf \
+    huggingface_hub
 
 # Install Intel Graphic Drivers
 RUN wget -qO - https://repositories.intel.com/gpu/intel-graphics.key | \
@@ -63,22 +64,3 @@ RUN git clone --recursive https://github.com/intel/pcm && \
 RUN pip install --break-system-packages --pre -U openvino-genai --extra-index-url https://storage.openvinotoolkit.org/simple/wheels/nightly 
 
 RUN pip3 install --break-system-packages optimum-intel@git+https://github.com/huggingface/optimum-intel.git
-
-# Generate Models
-ARG MODELS
-ARG PRECISIONS
-
-WORKDIR /opt/models
-RUN for model in ${MODELS}; do \
-        model_name=$(basename "$model"); \
-        for precision in ${PRECISIONS}; do \
-            precision_lower=$(echo "$precision" | tr '[:upper:]' '[:lower:]'); \
-            output_dir="./$model_name/$precision/$model_name"; \
-            echo "Generating $model in $precision format..."; \
-            optimum-cli export openvino \
-                --model "$model" \
-                --weight-format "$precision_lower" \
-                --trust-remote-code "$output_dir"; \
-        done; \
-    done
-

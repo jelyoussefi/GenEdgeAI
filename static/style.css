@@ -204,21 +204,21 @@ html, body {
     z-index: 10; /* Ensure it stays above other content */
 }
 
-/* Existing .message-content styling */
+/* Message Content - Updated to match Grok-style font (Arial, 16px, left-aligned) */
 .message-content {
     flex: 1;
-    font-size: 16px; /* Match your request and existing CSS */
-    font-family: 'Arial', sans-serif; /* Match your request and existing CSS */
-    font-weight: 500; /* Match your request and existing CSS */
-    color: #333;
+    font-family: 'Arial', sans-serif; /* Match Grok's typical sans-serif font */
+    font-size: 16px; /* Match Grok's typical readable size */
+    font-weight: 600; /* Normal weight for readability, as Grok typically uses plain text */
+    color: #222;
     word-wrap: break-word; /* Ensure long text wraps */
     overflow-wrap: break-word; /* Alternative for older browsers */
     height: auto; /* Adjust height based on content */
     display: flex;
-    align-items: flex-start; /* Keep left-aligned as per your request and my default */
+    align-items: flex-start; /* Keep left-aligned as per your request and screenshot */
     flex-direction: column; /* Stack text vertically */
     padding-right: 50px; /* Space for the copy button */
-    text-align: left; /* Explicitly set to left-aligned to match your screenshot and request */
+    text-align: left; /* Explicitly set to left-aligned to match Grok's style and your screenshot */
     line-height: 1.5; /* Improve readability with better line spacing */
     white-space: pre-wrap; /* Preserve line breaks and spaces from streamed content */
 }
@@ -229,7 +229,6 @@ html, body {
     text-justify: inter-word; /* Ensures words are spaced evenly for justification */
 }
 
-/* Chat Bot Prompt Container */
 #chatbot-prompt-container {
     flex: 1; /* Still takes 25% of #chatbots-container height as per original design */
     width: 80%;
@@ -241,21 +240,41 @@ html, body {
     border-radius: 16px; /* Rounded corners */
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1), 0 4px 8px rgba(128, 128, 128, 0.2); /* Grey shadow */
     display: flex;
-    align-items: stretch; /* Stretch children to fill height */
-    justify-content: space-between;
+    flex-direction: column; /* Changed to column for vertical alignment */
+    align-items: stretch; /* Stretch children horizontally to fill width */
+    justify-content: space-between; /* Distribute space between saver and inner */
     transition: all 0.3s ease;
     height: 100%; /* Ensure it takes full available height */
-    max-height: 25vh; /* Limit to a reasonable portion of viewport height, adjust as needed */
+    max-height: 25vh; /* Limit to a reasonable portion of viewport height */
+}
+
+/* Chat Bot Prompt Saver */
+.chatbot-prompt-saver {
+    width: 100%; /* Matches chatbot-prompt-inner width */
+    height: 50%; /* Half the height of chatbot-prompt-inner's container */
+    font-size: 12px; /* Smaller font size than chatbot-input (16px) */
+    font-family: 'Arial', sans-serif; /* Consistent font */
+    font-weight: 500; /* Match chatbot-input weight */
+    color: #333; /* Match chatbot-input color */
+    background: #f9f9f9; /* Light grey background for distinction */
+    border: 1px solid #e0e0e0; /* Subtle border */
+    border-radius: 8px; /* Slightly less rounded than container */
+    padding: 8px; /* Smaller padding for smaller space */
+    overflow-y: auto; /* Allow scrolling if content exceeds height */
+    text-align: left; /* Left-aligned text */
+    line-height: 1.4; /* Slightly tighter line spacing for smaller font */
+    white-space: pre-wrap; /* Preserve line breaks and spaces */
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05); /* Subtle inner shadow */
 }
 
 /* Chat Bot Prompt Inner */
 .chatbot-prompt-inner {
     width: 100%;
+    height: 50%; /* Half the height of chatbot-prompt-container to pair with saver */
     display: flex;
     align-items: stretch; /* Stretch children (input and button) to fill height */
     justify-content: space-between;
     gap: 10px;
-    height: 100%; /* Ensure it takes full height of parent */
 }
 
 /* Chat Bot Input */
