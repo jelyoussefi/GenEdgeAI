@@ -4,8 +4,9 @@ CURRENT_DIR := $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
 PORT ?= 80
 
 # Default Models and Precisions
-MODELS ?= TinyLlama/TinyLlama-1.1B-Chat-v1.0 deepseek-ai/DeepSeek-R1-Distill-Llama-8B
-PRECISIONS ?= FP16 INT8 INT4
+MODELS ?= TinyLlama/TinyLlama-1.1B-Chat-v1.0
+# DeepSeek-R1-Distill-Llama-8B
+PRECISIONS ?= FP16 INT8 
 
 
 # Docker Configuration
@@ -27,7 +28,7 @@ DOCKER_RUN_PARAMS := \
 
 DOCKER_BUILD_PARAMS := \
 	--rm \
-     --build-arg MODELS="$(MODELS)" \
+    --build-arg MODELS="$(MODELS)" \
     --build-arg PRECISIONS="$(PRECISIONS)" \
     --build-arg http_proxy=$(HTTP_PROXY) \
     --build-arg https_proxy=$(HTTPS_PROXY) \
