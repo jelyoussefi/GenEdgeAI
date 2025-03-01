@@ -61,7 +61,7 @@ class Chatbot:
 
 		if subword:  # Only process non-empty subwords
 			# Emit the raw subword (including <think> and </think>) with metrics
-			self.socketio.emit('chatbot_stream', {
+			self.socketio.emit('chatbot_stream_message', {
 				'chatbot_id': self.chatbot_id,
 				'subword': subword,
 				'latency_ms_per_token': round(sum(self.latency_history) / len(self.latency_history) if self.latency_history else 0, 2),
@@ -121,10 +121,18 @@ class Chatbot:
 					self.generating = True
 
 				self.pipeline.start_chat()
+
+				self.socketio.emit('chatbot_stream_start', {
+					'chatbot_id': self.chatbot_id
+				})
 				
 				res = self.pipeline.generate(prompt, self.config, self.streamer)
 
 				self.pipeline.finish_chat()
+
+				self.socketio.emit('chatbot_stream_stop', {
+					'chatbot_id': self.chatbot_id
+				})
 				
 				with self.cv:
 					self.generating = False

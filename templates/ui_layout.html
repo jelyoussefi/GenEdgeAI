@@ -36,9 +36,9 @@
                     </div>
                 </div>
                 <div class="chatbot-message">
-                    <div class="message-tools"> 
-                        <img src="{{ url_for('static', filename='images/waiting.gif') }}" class="waiting" alt="Thinking">
-                        <button class="copy-button" title="Copy message"> <i class="fas fa-copy"></i> </button>
+                    <div class="message-tools" id="message-tools"> 
+                        <img src="{{ url_for('static', filename='images/waiting.gif') }}" class="waiting tool" style="display: none;" >
+                        <button class="copy-button tool" title="Copy message"> <i class="fas fa-copy"></i> </button>
                     </div>
                     <div class="message-content" id="message-content">
                         <!-- Generated chatbot message will be inserted here dynamically -->
@@ -83,10 +83,10 @@
         <hr class="separator">
 
         <div id="chatbot-prompt-container">   
-            <div class="chatbot-prompt-inner">
-                <textarea id="chatbot-input" placeholder="Ask me anything..." rows="1"></textarea>
+            <div class="prompt-inner">
+                <textarea id="prompt-input" placeholder="Ask me anything..." rows="1"></textarea>
                 <button id="send-button" disabled>
-                    <i class="fas fa-arrow-up"></i> <!-- FontAwesome Up Arrow Icon -->
+                    <i class="fas fa-arrow-up"></i> 
                 </button>
             </div>
         </div>

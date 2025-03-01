@@ -190,6 +190,7 @@
             devicesList.forEach(type => {
                 const clone = template.clone(true).attr('id', type).hide();
                 clone.find('#message-content').attr('id', `message-content-${type}`);
+                clone.find('#message-tools').attr('id', `message-tools-${type}`);                
                 clone.find('#fpsGauge').attr('id', `fpsGauge-${type}`);
                 clone.find('#latencyGauge').attr('id', `latencyGauge-${type}`);
                 clone.find('#modelDropdown').attr('id', `modelDropdown-${type}`);
@@ -358,27 +359,26 @@
 
         // Send Message Functionality
         function toggleSendButton() {
-            const message = $('#chatbot-input').val().trim();
+            const message = $('#prompt-input').val().trim();
             $('#send-button').prop('disabled', !message);
         }
 
-        $('#chatbot-input').on('input', toggleSendButton);
+        $('#prompt-input').on('input', toggleSendButton);
 
         $('#send-button').on('click', function () {
-            const message = $('#chatbot-input').val().trim();
+            const message = $('#prompt-input').val().trim();
             if (message) {
                 console.log('Sending message:', message);
                 
                 // Save the prompt in chatbot-prompt-saver
                 $('.chatbot-prompt-saver').text(message);
                 
-                $('#chatbot-input').val(''); // Clear input after sending
+                $('#prompt-input').val(''); // Clear input after sending
                 toggleSendButton();
                 
                 // Clear previous messages in all running chatbots
                 currentStateList.forEach(state => {
                     if (state.running) {
-                        $(`#${state.chatbot_id} .message-content`).text('');
                         $.ajax({
                             url: '/prompt_chatbot',
                             type: 'POST',
@@ -396,7 +396,7 @@
             }
         });
 
-        $('#chatbot-input').on('keypress', function (e) {
+        $('#prompt-input').on('keypress', function (e) {
             if (e.which === 13 && !e.shiftKey) { // Enter key without Shift
                 e.preventDefault();
                 $('#send-button').click();
@@ -405,7 +405,27 @@
 
         const socket = io.connect('http://' + document.domain + ':' + location.port);
 
-        socket.on('chatbot_stream', function(data) {
+        socket.on('chatbot_stream_start', function(data) {
+            const chatbotId = data.chatbot_id;
+            const processing = $(`#message-tools-${chatbotId} .waiting`);
+            processing.show()
+        })
+
+        socket.on('chatbot_stream_stop', function(data) {
+            const chatbotId = data.chatbot_id;
+            const processing = $(`#message-tools-${chatbotId} .waiting`);
+            const messageContent = $(`#message-content-${chatbotId}`);
+            let state = currentStateList.find(s => s.chatbot_id === chatbotId);
+
+            processing.hide()
+            state.message += "\n\n";
+            messageContent.html(marked.parse(state.message));
+
+            // Auto-scroll to the bottom of message-content
+            messageContent.scrollTop(messageContent[0].scrollHeight);
+        })
+
+        socket.on('chatbot_stream_message', function(data) {
             const chatbotId = data.chatbot_id;
             let state = currentStateList.find(s => s.chatbot_id === chatbotId);
             const subword = data.subword;
@@ -431,35 +451,6 @@
 
             updateGaugeCaption(`#latencyGauge-${chatbotId}`, latency, initialCaptionConfigs(chatbotId).latency);
             updateGaugeCaption(`#fpsGauge-${chatbotId}`, throughput, initialCaptionConfigs(chatbotId).fps);
-        });
-
-        $('#send-button').on('click', function () {
-            const message = $('#chatbot-input').val().trim();
-            if (message) {
-                console.log('Sending message:', message);
-                $('.chatbot-prompt-saver').text(message);
-                $('#chatbot-input').val('');
-                toggleSendButton();
-
-                currentStateList.forEach(state => {
-                    if (state.running) {
-                        const chatbotId = state.chatbot_id;
-                        state.thinking = false;
-                        $.ajax({
-                            url: '/prompt_chatbot',
-                            type: 'POST',
-                            contentType: 'application/json',
-                            data: JSON.stringify({ chatbot_id: chatbotId, prompt: message }),
-                            success: (response) => {
-                                console.log(`Prompt successfully sent to ${chatbotId}`);
-                            },
-                            error: (xhr) => {
-                                console.error(`Failed to send prompt to ${chatbotId}: ${xhr.responseText}`);
-                            }
-                        });
-                    }
-                });
-            }
         });
 
         // Document Ready Initialization
