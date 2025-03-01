@@ -162,32 +162,32 @@ html, body {
     height: 36px;
     display: flex;
     flex-direction: row;
-    justify-content: flex-end; /* Aligns all items to the right, keeping copy-button on the right */
+    justify-content: center; /* Centers all items, but we’ll use margins and orders for specific positioning */
     align-items: center;
     margin-top: 10px;
     padding: 10px;
 }
 
-/* Ensure .waiting stays on the left when visible, but doesn’t affect .copy-button positioning */
-.waiting {
-    order: -1; /* Forces .waiting to the start (left) of the flex container when visible */
-    margin-right: auto; /* Pushes .waiting to the left, allowing .copy-button to stay on the right */
+/* Ensure .processing (waiting) stays on the left when visible, but doesn’t affect other positioning */
+.processing {
+    order: -1; /* Forces .processing to the start (left) of the flex container when visible */
+    margin-right: auto; /* Pushes .processing to the left, allowing .thinking and .copy-button to position naturally */
 }
 
+/* Ensure .thinking stays in the middle */
+.thinking {
+    order: 0; /* Keeps .thinking in the default position (center) when no other items shift it */
+    margin-left: auto; /* Pushes .thinking rightward to help center it, balanced by .copy-button */
+    margin-right: auto; /* Balances .thinking in the center, working with justify-content: center */
+}
+
+/* Ensure .copy-button stays on the right */
 .copy-button {
-    order: 0; /* Keeps .copy-button at the end (right) of the flex container */
+    order: 1; /* Places .copy-button at the end (right) of the flex container */
+    margin-left: auto; /* Pushes .copy-button to the right, ensuring it stays on the right edge */
 }
 
-/* Ensure waiting image scales properly */
-.waiting img {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-    display: none;
-}
-
-
-/* Waiting (Thinking) Image and Copy Button */
+/* Waiting (Processing) and Thinking Images and Copy Button */
 .tool {
     width: 36px; /* Same width and height for consistency */
     height: 36px;
@@ -201,6 +201,14 @@ html, body {
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
     transition: background 0.3s, transform 0.2s;
     z-index: 10;
+}
+
+/* Ensure processing image scales properly */
+.processing img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: none;
 }
 
 /* Copy Button Specific Hover and Active States */
@@ -218,7 +226,6 @@ html, body {
     font-size: 16px;
     color: #2c3e50;
 }
-
 
 .message-content {
     flex: 1;

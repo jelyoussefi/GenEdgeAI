@@ -407,13 +407,13 @@
 
         socket.on('chatbot_stream_start', function(data) {
             const chatbotId = data.chatbot_id;
-            const processing = $(`#message-tools-${chatbotId} .waiting`);
+            const processing = $(`#message-tools-${chatbotId} .processing`);
             processing.show()
         })
 
         socket.on('chatbot_stream_stop', function(data) {
             const chatbotId = data.chatbot_id;
-            const processing = $(`#message-tools-${chatbotId} .waiting`);
+            const processing = $(`#message-tools-${chatbotId} .processing`);
             const messageContent = $(`#message-content-${chatbotId}`);
             let state = currentStateList.find(s => s.chatbot_id === chatbotId);
 
@@ -432,6 +432,7 @@
             const latency = Math.round(data.latency_ms_per_token);
             const throughput = Math.round(data.throughput_tokens_per_sec);
             const messageContent = $(`#message-content-${chatbotId}`);
+            const thinking = $(`#message-tools-${chatbotId} .thinking`);
 
             let cleanedSubword = subword;
             if (subword.includes('<think>')) {
@@ -441,6 +442,13 @@
             if (subword.includes('</think>')) {
                 state.thinking = false;
                 cleanedSubword = subword.replace('</think>', '').trim();
+            }
+
+            if ( state.thinking ) {
+                thinking.show()
+            }
+            else {
+                thinking.hide()
             }
 
             state.message += cleanedSubword;
