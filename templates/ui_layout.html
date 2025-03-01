@@ -22,6 +22,7 @@
 
     <div id="chatbots-container" class="d-flex flex-column align-items-center">
         <hr class="separator">
+        <div class="chatbot-prompt-saver"></div> 
         <div id="chatbots">
             <div class="chatbot" id="chatbot" style="display: none;">
                 <div class="chatbot-metrics">
@@ -35,9 +36,10 @@
                     </div>
                 </div>
                 <div class="chatbot-message">
-                    <button class="copy-button" title="Copy message">
-                        <i class="fas fa-copy"></i> <!-- Using Font Awesome copy icon -->
-                    </button>
+                    <div class="message-tools"> 
+                        <img src="{{ url_for('static', filename='images/waiting.gif') }}" class="waiting" alt="Thinking">
+                        <button class="copy-button" title="Copy message"> <i class="fas fa-copy"></i> </button>
+                    </div>
                     <div class="message-content" id="message-content">
                         <!-- Generated chatbot message will be inserted here dynamically -->
                     </div>
@@ -80,9 +82,7 @@
         
         <hr class="separator">
 
-        <div id="chatbot-prompt-container">
-            <div class="chatbot-prompt-saver">
-            </div>    
+        <div id="chatbot-prompt-container">   
             <div class="chatbot-prompt-inner">
                 <textarea id="chatbot-input" placeholder="Ask me anything..." rows="1"></textarea>
                 <button id="send-button" disabled>
@@ -90,10 +90,9 @@
                 </button>
             </div>
         </div>
-    
     </div>
 
-    <div class="control"  id="general-control" class="mt-3">
+    <div class="control" id="general-control" class="mt-3">
         <div class="d-flex align-items-center justify-content-center mt-4">
             <button id="multiDeviceToggle" class="custom-button btn btn-primary">
                 Multiple Devices

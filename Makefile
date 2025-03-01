@@ -7,6 +7,7 @@ PORT ?= 80
 
 # Default Models and Precisions
 MODELS ?=  \
+		meta-llama/Meta-Llama-3-8B \
 		deepseek-ai/DeepSeek-R1-Distill-Llama-8B \
 		TinyLlama/TinyLlama-1.1B-Chat-v1.0 
 	
@@ -52,14 +53,13 @@ build:
 	@mkdir -p -m 777 $(CACHE_DIR) 
 	@docker build ${DOCKER_BUILD_PARAMS}
 
-run: build
+run: 	build
 	@echo "🚀 Running Gen Edge AI demo..."
 	@docker run $(DOCKER_RUN_PARAMS) bash -c "python3 ./app.py --port $(PORT) --models_dir $(MODELS_DIR)"
 
 models: build
-	@echo "🚀 Generating models..."
 	@docker run $(DOCKER_RUN_PARAMS) ./utils/generate_models.sh $(HF_TOKEN) "$(MODELS)" "$(PRECISIONS)" $(MODELS_DIR)
 
-bash: build
+bash: models
 	@echo "🐚 Starting bash in container..."
 	@docker run $(DOCKER_RUN_PARAMS) bash

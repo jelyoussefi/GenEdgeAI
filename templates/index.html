@@ -11,8 +11,8 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/css/bootstrap-datetimepicker.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-    <script src="https://unpkg.com/@turf/turf@6.2.0-alpha.1/dist/turf.min.js"></script>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 {% endblock %}
 
 {% block content %}
@@ -32,7 +32,7 @@
 
     <script>
         const devicesList = {{ devices|tojson }}.map(device => device.toLowerCase());
-        console.log(devicesList)
+        console.log(devicesList);
         const currentStateList = [];
 
         /**
@@ -115,7 +115,6 @@
                     }
                 }
             });
-
         }
 
         /**
@@ -145,7 +144,6 @@
                 },
                 error: (xhr, status, error) => console.error(`Failed to stop ${chatbotId}:`, { status, error, response: xhr.responseText })
             });
-
         }
 
         /**
@@ -177,9 +175,7 @@
                     type: 'POST',
                     contentType: 'application/json',
                     data: JSON.stringify(state),
-                    success: () => {
-                      
-                    },
+                    success: () => {},
                     error: () => console.error(`Failed to update ${chatbotId}`)
                 });
             }
@@ -208,7 +204,10 @@
                     precision: '{{ default_precision }}',
                     running: false,
                     selector: $(`#${type}`),
-                    source_height: 0
+                    source_height: 0,
+                    message: "",
+                    thinking: false,
+                    new_prompt: true
                 });
             });
         }
@@ -282,8 +281,8 @@
             setupGauge('#powerGauge', { width: 140, height: 140, hasPointer: true, offset: [0, 5], ranges: [[0, 20], [20, 40], [40, 60]] });
 
             devicesList.forEach(type => {
-                setupGauge(`#fpsGauge-${type}`, { width: 60, height: 60, hasPointer: false, position : 'top', ranges: [] });
-                setupGauge(`#latencyGauge-${type}`, { width: 60, height: 60, hasPointer: false, position : 'top', ranges: [] });
+                setupGauge(`#fpsGauge-${type}`, { width: 60, height: 60, hasPointer: false, position: 'top', ranges: [] });
+                setupGauge(`#latencyGauge-${type}`, { width: 60, height: 60, hasPointer: false, position: 'top', ranges: [] });
             });
         }
 
@@ -348,9 +347,8 @@
                         stopChatbot(state.chatbot_id);
                     }
                 });
-            }
-            else {
-                 currentStateList.forEach((state) => {
+            } else {
+                currentStateList.forEach((state) => {
                     if (!state.running) {
                         startChatbot(state.chatbot_id);
                     }
@@ -407,21 +405,61 @@
 
         const socket = io.connect('http://' + document.domain + ':' + location.port);
 
-        // Handle streamed chatbot responses
         socket.on('chatbot_stream', function(data) {
             const chatbotId = data.chatbot_id;
+            let state = currentStateList.find(s => s.chatbot_id === chatbotId);
             const subword = data.subword;
-            const latency =  Math.round(data.latency_ms_per_token);  // In ms per token
-            const throughput =  Math.round(data.throughput_tokens_per_sec);  // In tokens per second
+            const latency = Math.round(data.latency_ms_per_token);
+            const throughput = Math.round(data.throughput_tokens_per_sec);
             const messageContent = $(`#message-content-${chatbotId}`);
-            
-            // Append the subword to the existing content
-            messageContent.text(messageContent.text() + subword);
+
+            let cleanedSubword = subword;
+            if (subword.includes('<think>')) {
+                state.thinking = true;
+                cleanedSubword = subword.replace('<think>', '').trim();
+            }
+            if (subword.includes('</think>')) {
+                state.thinking = false;
+                cleanedSubword = subword.replace('</think>', '').trim();
+            }
+
+            state.message += cleanedSubword;
+            messageContent.html(marked.parse(state.message));
+
+            // Auto-scroll to the bottom of message-content
             messageContent.scrollTop(messageContent[0].scrollHeight);
 
-            // Update latency and FPS gauges with streamed data
             updateGaugeCaption(`#latencyGauge-${chatbotId}`, latency, initialCaptionConfigs(chatbotId).latency);
             updateGaugeCaption(`#fpsGauge-${chatbotId}`, throughput, initialCaptionConfigs(chatbotId).fps);
+        });
+
+        $('#send-button').on('click', function () {
+            const message = $('#chatbot-input').val().trim();
+            if (message) {
+                console.log('Sending message:', message);
+                $('.chatbot-prompt-saver').text(message);
+                $('#chatbot-input').val('');
+                toggleSendButton();
+
+                currentStateList.forEach(state => {
+                    if (state.running) {
+                        const chatbotId = state.chatbot_id;
+                        state.thinking = false;
+                        $.ajax({
+                            url: '/prompt_chatbot',
+                            type: 'POST',
+                            contentType: 'application/json',
+                            data: JSON.stringify({ chatbot_id: chatbotId, prompt: message }),
+                            success: (response) => {
+                                console.log(`Prompt successfully sent to ${chatbotId}`);
+                            },
+                            error: (xhr) => {
+                                console.error(`Failed to send prompt to ${chatbotId}: ${xhr.responseText}`);
+                            }
+                        });
+                    }
+                });
+            }
         });
 
         // Document Ready Initialization

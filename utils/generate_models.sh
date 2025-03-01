@@ -40,6 +40,9 @@ for model in $MODELS; do
         else
             optimum-cli export openvino \
                 --model "$model" \
+                --task text-generation-with-past \
+                --group-size 64 \
+                --ratio 1.0 \
                 --weight-format "$precision_lower" \
                 --trust-remote-code "$output_dir" || { echo "Error: Failed to generate $model in $precision format"; exit 1; }
         fi

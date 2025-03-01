@@ -59,6 +59,7 @@ class ChatbotApp:
 			try:
 				model_path = os.path.join(self.models_dir, model_name, precision, model_name)
 				chatbot = Chatbot(chatbot_id, device, model_path, self.socketio)
+				#chatbot.load_model(model_path, device)
 				self.chatbots[chatbot_id] = chatbot
 				chatbot.start()
 				self.cv.notify_all()

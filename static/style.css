@@ -80,7 +80,6 @@ html, body {
     height: 100%; /* Ensure it uses the full available height */
 }
 
-
 /* Chat Bots Container and Layout */
 #chatbots {
     height: 75%; /* Take 75% of #chatbots-container height */
@@ -116,7 +115,6 @@ html, body {
     transform: translateY(-2px); /* Slight lift on hover for a dynamic effect */
 }
 
-
 /* Chat Bot Metrics (FPS and Latency Gauges) */
 .chatbot-metrics {
     width: 100%; /* Full width of #chatbot-container */
@@ -125,19 +123,19 @@ html, body {
     flex-direction: row; /* Align elements horizontally */
     align-items: center; /* Center vertically within its height */
     justify-content: space-between; /* Evenly distribute gauges uniformly with space between */
-    padding: 10px ; /* Add horizontal padding for spacing, keep vertical at 10px */
+    padding: 10px; /* Add horizontal padding for spacing, keep vertical at 10px */
     background: transparent;
     overflow: hidden; /* Ensure no overflow from gauges */
 }
 
-
 /* Ensure .message-content has relative positioning to contain the absolute button */
 .chatbot-message {
-    position: relative; /* Allows absolute positioning of the copy button */
+    position: relative; /* Allows absolute positioning of the copy button  */
     width: 100%;
     height: 100%;
     max-width: 100%;
     padding: 20px;
+    padding-top: 0;
     background: #ffffff;
     border: 1px solid #e0e0e0;
     border-radius: 12px;
@@ -150,7 +148,6 @@ html, body {
     overflow-y: auto;
 }
 
-
 #chatbot-control {
     width: 95%; /* Match #chatbot-container width */
     display: flex;
@@ -161,16 +158,23 @@ html, body {
     gap: 0px; /* No extra space between buttons */
 }
 
-
-
-
-
-
-/* Existing Copy Button (for reference, unchanged unless needed) */
-.copy-button {
-    width: 32px;
+/* Message Tools Styling */
+.message-tools {
+    width: 100%;
     height: 32px;
-    background: #f9f9f9;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 5px;
+}
+
+/* Waiting (Thinking) Image and Copy Button */
+.waiting,
+.copy-button {
+    width: 24px; /* Same width and height for consistency */
+    height: 24px;
+    background: #f9f9f9; /* Match background for consistency */
     border: 1px solid #e0e0e0;
     border-radius: 50%;
     display: flex;
@@ -179,8 +183,10 @@ html, body {
     cursor: pointer;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
     transition: background 0.3s, transform 0.2s;
+    z-index: 10;
 }
 
+/* Copy Button Specific Hover and Active States */
 .copy-button:hover {
     background: #e0e0e0;
     transform: scale(1.1);
@@ -196,31 +202,43 @@ html, body {
     color: #2c3e50;
 }
 
-/* New styling for the copy button in .chatbot-message */
-.chatbot-message .copy-button {
-    position: absolute; /* Position it absolutely within .chatbot-message */
-    top: 10px; /* Offset from the top */
-    right: 10px; /* Offset from the right */
-    z-index: 10; /* Ensure it stays above other content */
+/* Ensure waiting image scales properly */
+.waiting img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
 }
 
-/* Message Content - Updated to match Grok-style font (Arial, 16px, left-aligned) */
 .message-content {
     flex: 1;
-    font-family: 'Arial', sans-serif; /* Match Grok's typical sans-serif font */
-    font-size: 16px; /* Match Grok's typical readable size */
-    font-weight: 600; /* Normal weight for readability, as Grok typically uses plain text */
-    color: #222;
-    word-wrap: break-word; /* Ensure long text wraps */
-    overflow-wrap: break-word; /* Alternative for older browsers */
-    height: auto; /* Adjust height based on content */
+    font-family: 'Arial', sans-serif;
+    font-size: 18px;
+    font-weight: 400;
+    color: #333;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    height: auto;
     display: flex;
-    align-items: flex-start; /* Keep left-aligned as per your request and screenshot */
-    flex-direction: column; /* Stack text vertically */
-    padding-right: 50px; /* Space for the copy button */
-    text-align: left; /* Explicitly set to left-aligned to match Grok's style and your screenshot */
-    line-height: 1.5; /* Improve readability with better line spacing */
-    white-space: pre-wrap; /* Preserve line breaks and spaces from streamed content */
+    align-items: flex-start;
+    flex-direction: column;
+    padding-right: 50px;
+    text-align: left;
+    line-height: 1.2;
+    white-space: pre-wrap;
+    margin: 0;
+    padding: 0;
+    overflow-y: auto; /* Enable vertical scrolling only for message-content */
+    scrollbar-width: none; /* Hide scrollbar for Firefox */
+    -ms-overflow-style: none; /* Hide scrollbar for IE and Edge */
+}
+
+/* Hide scrollbar for Chrome, Safari, and Opera */
+.message-content::-webkit-scrollbar {
+    display: none;
+}
+
+.message-content strong {
+    font-weight: bold;
 }
 
 /* Optional: Add justification if you prefer full justification instead of left-alignment */
@@ -229,52 +247,57 @@ html, body {
     text-justify: inter-word; /* Ensures words are spaced evenly for justification */
 }
 
+/* Chat Bot Prompt Container */
 #chatbot-prompt-container {
     flex: 1; /* Still takes 25% of #chatbots-container height as per original design */
     width: 80%;
     max-width: 1280px;
-    padding: 15px 20px; /* Increased padding for a more spacious feel */
-    margin-top: 15px;
-    background: #ffffff; /* White background */
-    border: 2px solid #e0e0e0; /* Light grey border for contour */
-    border-radius: 16px; /* Rounded corners */
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1), 0 4px 8px rgba(128, 128, 128, 0.2); /* Grey shadow */
-    display: flex;
+    margin-top: 5px;
     flex-direction: column; /* Changed to column for vertical alignment */
     align-items: stretch; /* Stretch children horizontally to fill width */
     justify-content: space-between; /* Distribute space between saver and inner */
     transition: all 0.3s ease;
     height: 100%; /* Ensure it takes full available height */
     max-height: 25vh; /* Limit to a reasonable portion of viewport height */
+    background: transparent;
+    gap: 10px; /* Enforces 10px spacing between .chatbot-prompt-saver and .chatbot-prompt-inner */
 }
 
 /* Chat Bot Prompt Saver */
 .chatbot-prompt-saver {
-    width: 100%; /* Matches chatbot-prompt-inner width */
-    height: 50%; /* Half the height of chatbot-prompt-inner's container */
-    font-size: 12px; /* Smaller font size than chatbot-input (16px) */
+    width: 80%;
+    max-width: 1280px;
+    height: 80px; /* Matches chatbot-prompt-inner width */
+    font-size: 14px; /* Smaller font size than chatbot-input (16px) */
     font-family: 'Arial', sans-serif; /* Consistent font */
     font-weight: 500; /* Match chatbot-input weight */
-    color: #333; /* Match chatbot-input color */
-    background: #f9f9f9; /* Light grey background for distinction */
-    border: 1px solid #e0e0e0; /* Subtle border */
+    color: #333333; /* Darker text for contrast on a lighter background */
+    background: #d3d3d3; /* Light gray, even less dark than #666666 */
+    border: 1px solid #cccccc; /* Lighter border to match the new background */
     border-radius: 8px; /* Slightly less rounded than container */
     padding: 8px; /* Smaller padding for smaller space */
     overflow-y: auto; /* Allow scrolling if content exceeds height */
     text-align: left; /* Left-aligned text */
     line-height: 1.4; /* Slightly tighter line spacing for smaller font */
     white-space: pre-wrap; /* Preserve line breaks and spaces */
-    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05); /* Subtle inner shadow */
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05); /* Very light inner shadow */
+    margin-bottom: 10px; /* Retains the 10px spacing */
+    font-style: italic;
 }
 
 /* Chat Bot Prompt Inner */
 .chatbot-prompt-inner {
     width: 100%;
-    height: 50%; /* Half the height of chatbot-prompt-container to pair with saver */
+    height: 100%; /* Half the height of chatbot-prompt-container to pair with saver */
     display: flex;
     align-items: stretch; /* Stretch children (input and button) to fill height */
     justify-content: space-between;
     gap: 10px;
+    background: #ffffff; /* White background */
+    border: 2px solid #e0e0e0; /* Light grey border for contour */
+    border-radius: 16px; /* Rounded corners */
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1), 0 4px 8px rgba(128, 128, 128, 0.2); /* Grey shadow */
+    padding: 5px;
 }
 
 /* Chat Bot Input */
@@ -412,7 +435,6 @@ html, body {
     position: 'center';
 }
 
-
 /* ========================================================================= */
 /* Utilities Styling                                                        */
 /* ========================================================================= */
@@ -493,7 +515,7 @@ html, body {
     padding-bottom: 40px;
 }
 
-#multiDeviceToggle, {
+#multiDeviceToggle {
     min-width: 180px; /* Ensures both buttons have a larger width */
     padding: 10px 20px; /* Adds padding for better appearance */
     text-align: center; /* Ensures text stays centered */

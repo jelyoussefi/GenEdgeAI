@@ -21,14 +21,12 @@ RUN apt update -y && apt install -y \
     v4l-utils
 
 # Install Python packages
-RUN pip3 install --break-system-packages \
+RUN pip install --break-system-packages \
     Flask \
     flask_bootstrap \
     flask-socketio \
-    nncf \
     fire \
     psutil \
-    openvino-dev[onnx] \
     zeroconf \
     huggingface_hub
 
@@ -60,7 +58,17 @@ RUN git clone --recursive https://github.com/intel/pcm && \
     make install && \
     rm -rf /tmp/pcm
 
-# Install OpenVINO GenAI
-RUN pip install --break-system-packages --pre -U openvino-genai --extra-index-url https://storage.openvinotoolkit.org/simple/wheels/nightly 
 
-RUN pip3 install --break-system-packages optimum-intel@git+https://github.com/huggingface/optimum-intel.git
+RUN pip install --break-system-packages  -U --pre \
+    openvino-genai \
+    openvino \
+    openvino-tokenizers[transformers] \
+        --extra-index-url https://storage.openvinotoolkit.org/simple/wheels/nightly 
+
+RUN pip install --break-system-packages  \
+        --extra-index-url https://download.pytorch.org/whl/cpu \
+        "git+https://github.com/huggingface/optimum-intel.git" \
+        "git+https://github.com/openvinotoolkit/nncf.git" \
+        "onnx<=1.16.1"
+
+RUN pip install --break-system-packages markdown bleach
