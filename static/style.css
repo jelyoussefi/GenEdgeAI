@@ -227,33 +227,47 @@ html, body {
     color: #2c3e50;
 }
 
+.thinking-text {
+    font-style: italic !important;
+    color: #999 !important;
+    opacity: 0.5 !important;
+    display: inline !important;
+}
+
 .message-content {
-    flex: 1;
+    flex: 1; /* Allows it to grow within its container */
     font-family: 'Arial', sans-serif;
     font-size: 18px;
     font-weight: 400;
     color: #333;
     word-wrap: break-word;
     overflow-wrap: break-word;
-    height: auto;
+    height: auto; /* Height adjusts to content */
+    max-height: 100%; /* Ensures it respects the parent’s height */
     display: flex;
     align-items: flex-start;
     flex-direction: column;
-    padding-right: 50px;
+    padding-right: 50px; /* Space for tools like the copy button */
     text-align: left;
-    line-height: 1.2;
-    white-space: pre-wrap;
+    line-height: 1.4;
+    white-space: pre-wrap; /* Preserves whitespace and wraps text */
     margin: 10px;
     padding-top: 10px;
-    overflow-y: auto; /* Enable vertical scrolling only for message-content */
-    scrollbar-width: none; /* Hide scrollbar for Firefox */
-    -ms-overflow-style: none; /* Hide scrollbar for IE and Edge */
+    overflow-y: auto; /* Enables vertical scrolling */
+    scrollbar-width: none; /* Hides scrollbar in Firefox */
+    -ms-overflow-style: none; /* Hides scrollbar in IE and Edge */
 }
 
-/* Hide scrollbar for Chrome, Safari, and Opera */
+/* Hides scrollbar in Chrome, Safari, and Opera */
 .message-content::-webkit-scrollbar {
     display: none;
 }
+
+/* Ensure focusability for keyboard navigation */
+.message-content:focus {
+    outline: none; /* Removes default focus outline */
+}
+
 
 .message-content strong {
     font-weight: bold;

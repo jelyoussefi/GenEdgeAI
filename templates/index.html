@@ -405,6 +405,11 @@
 
         const socket = io.connect('http://' + document.domain + ':' + location.port);
 
+        marked.use({
+            sanitize: true, 
+            breaks: true,    // Ensure line breaks are preserved
+        });
+
         socket.on('chatbot_stream_start', function(data) {
             const chatbotId = data.chatbot_id;
             const processing = $(`#message-tools-${chatbotId} .processing`);
@@ -417,13 +422,14 @@
             const messageContent = $(`#message-content-${chatbotId}`);
             let state = currentStateList.find(s => s.chatbot_id === chatbotId);
 
-            processing.hide()
-            state.message += "\n\n";
+            processing.hide();
+            state.message += "<br>";
+            // Use marked.parse() with HTML preservation
             messageContent.html(marked.parse(state.message));
 
             // Auto-scroll to the bottom of message-content
             messageContent.scrollTop(messageContent[0].scrollHeight);
-        })
+        });
 
         socket.on('chatbot_stream_message', function(data) {
             const chatbotId = data.chatbot_id;
@@ -435,24 +441,29 @@
             const thinking = $(`#message-tools-${chatbotId} .thinking`);
 
             let cleanedSubword = subword;
+            let wrappedSubword = cleanedSubword; // Default to unchanged subword
+
             if (subword.includes('<think>')) {
                 state.thinking = true;
                 cleanedSubword = subword.replace('<think>', '').trim();
+                wrappedSubword = `<span class="thinking-text">${cleanedSubword}`;
             }
             if (subword.includes('</think>')) {
                 state.thinking = false;
                 cleanedSubword = subword.replace('</think>', '').trim();
+                wrappedSubword = `${cleanedSubword}</span>`;
             }
 
-            if ( state.thinking ) {
-                thinking.show()
-            }
-            else {
-                thinking.hide()
+            if (state.thinking) {
+                thinking.show();
+            } else {
+                thinking.hide();
             }
 
-            state.message += cleanedSubword;
-            messageContent.html(marked.parse(state.message));
+            state.message += wrappedSubword;
+            let formattedMessage = state.message.replace(/\n/g, '<br>');
+          
+            messageContent.html(marked.parse(formattedMessage));
 
             // Auto-scroll to the bottom of message-content
             messageContent.scrollTop(messageContent[0].scrollHeight);
