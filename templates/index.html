@@ -130,6 +130,8 @@
                 return;
             }
 
+            element.hide();
+
             console.log(`Stopping chatbot: ${chatbotId}`);
 
             $.ajax({
@@ -139,7 +141,6 @@
                 data: JSON.stringify({ chatbot_id: chatbotId }),
                 success: () => {
                     state.running = false;
-                    element.hide();
                     console.log(`${chatbotId} stopped successfully.`);
                 },
                 error: (xhr, status, error) => console.error(`Failed to stop ${chatbotId}:`, { status, error, response: xhr.responseText })
@@ -161,14 +162,14 @@
                 return;
             }
 
-            updateDropdownSelection(chatbotId, type);
             element.show();
 
-            console.log(`Updating chatbot: ${chatbotId}`);
+            console.log(`Updating player: ${chatbotId}`, type, value);
 
             if (state[type] !== value) {
                 state[type] = value;
-                element.hide();
+                
+                updateDropdownSelection(chatbotId, type);
 
                 $.ajax({
                     url: '/update_chatbot',
@@ -218,6 +219,7 @@
          * @param {string} chatbotId - ID of the chatbot
          * @param {string} type - Type of dropdown (model, device, precision)
          */
+       
         function updateDropdownSelection(chatbotId, type) {
             const state = currentStateList.find(s => s.chatbot_id === chatbotId);
             if (!state) {
@@ -225,16 +227,22 @@
                 return;
             }
 
-            const value = state[type];
-            if (value) {
-                $(`#${type}Dropdown-${chatbotId} + .dropdown-menu .dropdown-item`).show();
-                $(`#${type}Dropdown-${chatbotId} + .dropdown-menu .dropdown-item[data-${type}="${value}"]`).hide();
-                $(`#${type}Dropdown-${chatbotId}`).text(value);
+            const currentValue = state[type];
 
+            if (currentValue) {
+                // Reset visibility for all options in the current dropdown
+                $(`#${type}Dropdown-${chatbotId} + .dropdown-menu .dropdown-item`).show();
+
+                // Hide the selected option for the current player
+                $(`#${type}Dropdown-${chatbotId} + .dropdown-menu .dropdown-item[data-${type}="${currentValue}"]`).hide();
+
+                $(`#${type}Dropdown-${chatbotId}`).text(currentValue);
+
+                // Multi-device handling: Hide the selected option across other players
                 if (type === 'device' && isMultipleDevices()) {
-                    currentStateList.forEach(s => {
-                        $(`#${type}Dropdown-${s.chatbot_id} + .dropdown-menu .dropdown-item[data-${type}="${value}"]`).hide();
-                        if (chatbotId === s.chatbot_id) {
+                    currentStateList.forEach(state => {
+                        $(`#${type}Dropdown-${state.chatbot_id} + .dropdown-menu .dropdown-item[data-${type}="${currentValue}"]`).hide();
+                        if (chatbotId === state.chatbot_id) {
                             currentStateList.filter(s => s.running).forEach(runningState => {
                                 $(`#${type}Dropdown-${chatbotId} + .dropdown-menu .dropdown-item[data-${type}="${runningState[type]}"]`).hide();
                             });
@@ -243,6 +251,7 @@
                 }
             }
         }
+
 
         /**
          * Get initial caption configurations for gauges
@@ -306,33 +315,23 @@
             });
         }
 
-        /**
-         * Check if multiple devices mode is active
-         * @returns {boolean} True if in single device mode, false otherwise
-         */
-        function isMultipleDevices() {
-            return $('#multiDeviceToggle').text().trim() === "Single Device";
-        }
+        $('.dropdown-menu[data-type="prompt"]').on('click', '.dropdown-item', function () {
+            const promptName = $(this).data('prompt-name');
+            const promptText = $(this).data('prompt-text');
+            
+            console.log(`Selected prompt: ${promptName} - ${promptText}`);
+            
+            // Populate the prompt-input textarea with the selected prompt text
+            $('#prompt-input').val(promptText);
+            toggleSendButton(); // Enable/disable send button based on input
+        });
 
-        // Event Handlers for Dropdowns and Buttons
-        $('.dropdown-menu').on('click', '.dropdown-item', function () {
-            const type = $(this).closest('.dropdown-menu').data('type');
-            const value = $(this).data(type);
+        $('.dropdown-menu[data-type="model"], .dropdown-menu[data-type="device"], .dropdown-menu[data-type="precision"]').on('click', '.dropdown-item', function () {
+            const type = $(this).closest('.dropdown-menu').data('type'); // Dropdown type (e.g., source, model, device, precision)
+            const value = $(this).data(type); // Selected value from the dropdown
             const chatbotId = $(this).closest('.chatbot').attr('id');
-
-            if (type === 'device') {
-                const newChatbotId = value.toLowerCase();
-                updateDropdownSelection(newChatbotId, type);
-
-                if (isMultipleDevices()) {
-                    startChatbot(newChatbotId);
-                } else {
-                    stopChatbot(chatbotId);
-                    startChatbot(newChatbotId);
-                }
-            } else {
-                updateChatbot(chatbotId, type, value);
-            }
+            
+            updateChatbot(chatbotId, type, value);
         });
 
         function isMultipleDevices() {
@@ -343,17 +342,31 @@
             $(this).toggleClass('active');
             if (!isMultipleDevices()) {
                 currentStateList.forEach((state, index) => {
-                    updateDropdownSelection(state.chatbot_id, 'device', false);
-                    if (index !== 0) {
+                    if (state.running && index !== 0) {
                         stopChatbot(state.chatbot_id);
                     }
+                    updateDropdownSelection(state.chatbot_id, "device")
                 });
-            } else {
-                currentStateList.forEach((state) => {
-                    if (!state.running) {
-                        startChatbot(state.chatbot_id);
+            }
+            else {
+                let running_state = currentStateList[0]
+                currentStateList.forEach(state => {
+                    if (state.running) {
+                        running_state = state
                     }
-                });
+                })
+
+                currentStateList.forEach((state, index) => {
+                    if (state.running) {
+                        updateChatbot(state.chatbot_id, "device", state.chatbot_id.toUpperCase().replace(/-/g, '.'))
+                    }
+                    else {
+                        const device = state.chatbot_id.toUpperCase().replace(/-/g, '.')
+                        currentStateList[index].model = running_state.model
+                        currentStateList[index].precision = running_state.precision
+                        startChatbot(state.chatbot_id, false);
+                    }
+                })
             }
         });
 
@@ -461,8 +474,11 @@
             }
 
             state.message += wrappedSubword;
-            let formattedMessage = state.message.replace(/\n/g, '<br>');
-          
+            let formattedMessage = state.message 
+            if ( thinking ) {
+                formattedMessage = state.message.replace(/\n/g, '<br>');
+            }
+
             messageContent.html(marked.parse(formattedMessage));
 
             // Auto-scroll to the bottom of message-content
@@ -471,6 +487,8 @@
             updateGaugeCaption(`#latencyGauge-${chatbotId}`, latency, initialCaptionConfigs(chatbotId).latency);
             updateGaugeCaption(`#fpsGauge-${chatbotId}`, throughput, initialCaptionConfigs(chatbotId).fps);
         });
+
+
 
         // Document Ready Initialization
         $(document).ready(function () {

@@ -98,6 +98,18 @@
             <button id="multiDeviceToggle" class="custom-button btn btn-primary">
                 Multiple Devices
             </button>
+            <!-- New Prompt Dropdown Button -->
+            <div class="dropdown ml-3"> <!-- ml-3 adds margin-left for spacing -->
+                <button class="custom-button btn btn-primary dropdown-toggle" type="button" id="promptDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Prompts
+                </button>
+                <div class="dropdown-menu" aria-labelledby="promptDropdown" data-type="prompt">
+                    {% for prompt_name, prompt_text in prompts.items() %}
+                        <a class="dropdown-item prompt-option" data-prompt-name="{{ prompt_name }}" data-prompt-text="{{ prompt_text }}">{{ prompt_name }}</a>
+                    {% endfor %}
+                </div>
+            </div>
         </div>
     </div>
+
 </div>

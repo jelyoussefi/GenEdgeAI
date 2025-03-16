@@ -543,8 +543,15 @@ html, body {
     font-weight: bold; /* Bold text for emphasis */
 }
 
-#general-control {
+
+#general-control .d-flex {
+    gap: 15px; 
     padding-bottom: 40px;
+}
+
+.dropdown-menu[data-type="prompt"] {
+    max-height: 300px; /* Limit dropdown height */
+    overflow-y: auto; /* Scroll if too many prompts */
 }
 
 #multiDeviceToggle {

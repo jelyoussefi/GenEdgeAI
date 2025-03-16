@@ -11,6 +11,7 @@ from collections import deque
 from datetime import datetime, timedelta
 from utils.system_utils import get_power_consumption, get_gpu_model, list_devices
 from utils.chatbot import Chatbot
+from utils.prompts import prompts
 
 log = logging.getLogger('werkzeug')
 log.setLevel(logging.ERROR)
@@ -99,7 +100,8 @@ class ChatbotApp:
 				default_model=default_model,
 				platform_name=platform_name,
 				models=self.models,
-				precisions=self.precisions
+				precisions=self.precisions,
+				prompts=prompts
 			)
 
 		@app.route('/start_chatbot', methods=['POST'])
