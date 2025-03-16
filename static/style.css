@@ -549,6 +549,38 @@ html, body {
     padding-bottom: 40px;
 }
 
+/* Styling for all dropdown menus */
+.dropdown-menu {
+    position: absolute;
+    background-color: #fff;
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    border-radius: 0.25rem;
+    padding: 0.5rem 0;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.175);
+    z-index: 1000;
+    min-width: 200px;
+    max-height: none; /* Remove height restriction to show all items */
+    overflow-y: visible; /* Allow all items to be visible without scrollbar */
+}
+
+/* Ensure the dropdown is visible when the 'show' class is added by Bootstrap */
+.dropdown-menu.show {
+    display: block;
+}
+
+/* Style the dropdown items to be larger and bold for all dropdowns */
+.dropdown-menu .dropdown-item {
+    font-size: 18px; /* Increase font size (default is usually 14px in Bootstrap) */
+    font-weight: bold; /* Make the text bold */
+    color: #333; /* Ensure readability with a dark color */
+}
+
+/* Optional: Add hover effect for better UX across all dropdowns */
+.dropdown-menu .dropdown-item:hover {
+    background-color: #f0f0f0; /* Light gray background on hover */
+    color: #007bff; /* Change text color on hover for emphasis */
+}
+
 .dropdown-menu[data-type="prompt"] {
     max-height: 300px; /* Limit dropdown height */
     overflow-y: auto; /* Scroll if too many prompts */
