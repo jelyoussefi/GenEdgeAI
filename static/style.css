@@ -230,12 +230,12 @@ html, body {
 .thinking-text {
     font-style: italic !important;
     color: #999 !important;
-    opacity: 0.5 !important;
+    opacity: 0.7 !important;
     display: inline !important;
 }
 
 .message-content {
-    flex: 1; /* Allows it to grow within its container */
+    width: 100%;
     font-family: 'Arial', sans-serif;
     font-size: 18px;
     font-weight: 400;
@@ -247,12 +247,10 @@ html, body {
     display: flex;
     align-items: flex-start;
     flex-direction: column;
-    padding-right: 50px; /* Space for tools like the copy button */
     text-align: left;
     line-height: 1.4;
     white-space: pre-wrap; /* Preserves whitespace and wraps text */
-    margin: 10px;
-    padding-top: 10px;
+    padding: 20px;
     overflow-y: auto; /* Enables vertical scrolling */
     scrollbar-width: none; /* Hides scrollbar in Firefox */
     -ms-overflow-style: none; /* Hides scrollbar in IE and Edge */
@@ -277,6 +275,16 @@ html, body {
 .message-content.justified {
     text-align: justify; /* Use this class if you want full justification */
     text-justify: inter-word; /* Ensures words are spaced evenly for justification */
+}
+
+/* Chatbot Response Separator */
+.chatbot-response-separator {
+    height: 2px; /* Match the height of existing separators in the screenshot */
+    background: black;
+    border-radius: 1px; /* Match the slight rounding of other separators */
+    width: 100%; /* Full width within the message-content container */
+    opacity: 0.4; /* Fully opaque to match the solid look in the screenshot */
+    margin-bottom: 20px;
 }
 
 /* Chat Bot Prompt Container */
@@ -599,3 +607,4 @@ html, body {
     box-shadow: 0px 0px 10px rgba(40, 167, 69, 0.8); /* Soft glow effect */
     transform: scale(1.05); /* Slightly enlarge for effect */
 }
+
