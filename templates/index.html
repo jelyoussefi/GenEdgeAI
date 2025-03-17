@@ -197,6 +197,7 @@
                 clone.find('#modelDropdown').attr('id', `modelDropdown-${type}`);
                 clone.find('#deviceDropdown').attr('id', `deviceDropdown-${type}`);
                 clone.find('#precisionDropdown').attr('id', `precisionDropdown-${type}`);
+                clone.find('#copy-button').attr('id', `copy-button-${type}`); 
                 $('#chatbots').append(clone);
 
                 currentStateList.push({
@@ -212,6 +213,8 @@
                     thinking: false,
                     new_prompt: true
                 });
+                
+                toggleCopyButton(type); 
             });
         }
 
@@ -435,6 +438,7 @@
                 state.messages.push(separator);
             }
             state.messages.push('')
+            toggleCopyButton(chatbotId); 
         })
 
         socket.on('chatbot_stream_stop', function(data) {
@@ -447,6 +451,7 @@
 
             // Auto-scroll to the bottom of message-content
             messageContent.scrollTop(messageContent[0].scrollHeight);
+            toggleCopyButton(chatbotId);
         });
 
         socket.on('chatbot_stream_message', function(data) {
@@ -504,9 +509,21 @@
 
             updateGaugeCaption(`#latencyGauge-${chatbotId}`, latency, initialCaptionConfigs(chatbotId).latency);
             updateGaugeCaption(`#fpsGauge-${chatbotId}`, throughput, initialCaptionConfigs(chatbotId).fps);
+
+            toggleCopyButton(chatbotId); 
         });
 
 
+        /**
+         * Toggle the copy button state based on message content
+         * @param {string} chatbotId - ID of the chatbot
+         */
+        function toggleCopyButton(chatbotId) {
+            const messageContent = $(`#message-content-${chatbotId}`);
+            const copyButton = $(`#copy-button-${chatbotId}`);
+            const hasText = messageContent.text().trim().length > 0;
+            copyButton.prop('disabled', !hasText);
+        }
 
         // Document Ready Initialization
         $(document).ready(function () {

@@ -227,6 +227,29 @@ html, body {
     color: #2c3e50;
 }
 
+
+/* Copy Button Specific Hover and Active States */
+.copy-button:disabled {
+    background: #cccccc; /* Grayed-out background */
+    cursor: not-allowed;
+    box-shadow: none;
+    transform: none; /* Prevent scaling when disabled */
+}
+
+.copy-button:disabled:hover {
+    background: #cccccc; /* No change on hover when disabled */
+    transform: none;
+}
+
+.copy-button:disabled:active {
+    background: #cccccc; /* No change on click when disabled */
+    transform: none;
+}
+
+.copy-button:disabled i {
+    color: #999; /* Grayed-out icon */
+}
+
 .thinking-text {
     font-style: italic !important;
     color: #999 !important;
