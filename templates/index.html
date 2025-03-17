@@ -213,7 +213,7 @@
                     thinking: false,
                     new_prompt: true
                 });
-                
+
                 toggleCopyButton(type); 
             });
         }
@@ -524,6 +524,16 @@
             const hasText = messageContent.text().trim().length > 0;
             copyButton.prop('disabled', !hasText);
         }
+
+        $(document).on('click', '.copy-button', function() {
+            const chatbotId = $(this).closest('.chatbot').attr('id');
+            const messageContent = $(`#message-content-${chatbotId}`).text().trim();
+            if (messageContent) {
+                navigator.clipboard.writeText(messageContent)
+                    .then(() => console.log(`Copied text from ${chatbotId}`))
+                    .catch(err => console.error(`Failed to copy text from ${chatbotId}:`, err));
+            }
+        });
 
         // Document Ready Initialization
         $(document).ready(function () {
