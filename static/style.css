@@ -157,7 +157,7 @@ html, body {
 }
 
 /* Message Tools Styling */
-.message-tools {
+.tools {
     width: 100%;
     height: 36px;
     display: flex;
@@ -166,6 +166,12 @@ html, body {
     align-items: center;
     margin-top: 10px;
     padding: 10px;
+    background: inherit; 
+}
+
+#chatbot-prompt-container .tools {
+    justify-content: space-between; /* Pushes items to the edges */
+    margin-bottom: 10px;
 }
 
 /* Ensure .processing (waiting) stays on the left when visible, but doesn’t affect other positioning */
@@ -211,42 +217,41 @@ html, body {
     display: none;
 }
 
-/* Copy Button Specific Hover and Active States */
-.copy-button:hover {
+/* Tool Button Specific Hover and Active States */
+.tool:hover {
     background: #e0e0e0;
     transform: scale(1.1);
 }
 
-.copy-button:active {
+.tool:active {
     background: #d0d0d0;
     transform: scale(0.95);
 }
 
-.copy-button i {
+.tool i {
     font-size: 16px;
     color: #2c3e50;
 }
 
-
-/* Copy Button Specific Hover and Active States */
-.copy-button:disabled {
+/* Tool Button Specific Disabled States */
+.tool:disabled {
     background: #cccccc; /* Grayed-out background */
     cursor: not-allowed;
     box-shadow: none;
     transform: none; /* Prevent scaling when disabled */
 }
 
-.copy-button:disabled:hover {
+.tool:disabled:hover {
     background: #cccccc; /* No change on hover when disabled */
     transform: none;
 }
 
-.copy-button:disabled:active {
+.tool:disabled:active {
     background: #cccccc; /* No change on click when disabled */
     transform: none;
 }
 
-.copy-button:disabled i {
+.tool:disabled i {
     color: #999; /* Grayed-out icon */
 }
 
@@ -289,7 +294,6 @@ html, body {
     outline: none; /* Removes default focus outline */
 }
 
-
 .message-content strong {
     font-weight: bold;
 }
@@ -310,20 +314,23 @@ html, body {
     margin-bottom: 20px;
 }
 
-/* Chat Bot Prompt Container */
 #chatbot-prompt-container {
-    flex: 1; /* Still takes 25% of #chatbots-container height as per original design */
+    flex: 1;
     width: 80%;
     max-width: 1280px;
     margin-top: 5px;
-    flex-direction: column; /* Changed to column for vertical alignment */
-    align-items: stretch; /* Stretch children horizontally to fill width */
-    justify-content: space-between; /* Distribute space between saver and inner */
-    transition: all 0.3s ease;
-    height: 100%; /* Ensure it takes full available height */
-    max-height: 25vh; /* Limit to a reasonable portion of viewport height */
-    background: transparent;
-    gap: 10px; /* Enforces 10px spacing between .chatbot-prompt-saver and .chatbot-prompt-inner */
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 120px;
+    display: flex;
+    align-items: stretch;
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    background: #ffffff;
+    position: relative; /* Added to match .chatbot-message */
+    transition: all 0.3s ease; /* Added to match .chatbot-message */
+    overflow: hidden; /* Added to disable scrollbar */
 }
 
 /* Chat Bot Prompt Saver */
@@ -348,88 +355,32 @@ html, body {
     font-style: italic;
 }
 
-/* Chat Bot Prompt Inner */
-.prompt-inner {
-    width: 100%;
-    height: 100%; /* Half the height of chatbot-prompt-container to pair with saver */
-    display: flex;
-    align-items: stretch; /* Stretch children (input and button) to fill height */
-    justify-content: space-between;
-    gap: 10px;
-    background: #ffffff; /* White background */
-    border: 2px solid #e0e0e0; /* Light grey border for contour */
-    border-radius: 16px; /* Rounded corners */
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1), 0 4px 8px rgba(128, 128, 128, 0.2); /* Grey shadow */
-    padding: 5px;
-}
-
-/* Chat Bot Input */
 #prompt-input {
-    flex: 1; /* Still allows it to take available horizontal space */
     font-size: 16px;
     font-family: 'Arial', sans-serif;
     font-weight: 500;
     color: #333;
     background: transparent;
-    border: none;
-    border-radius: 12px; /* Rounded corners to match container */
-    outline: none;
-    box-shadow: none;
-    height: 100%; /* Set to full height of its container */
-    max-height: calc(100% - 20px); /* Account for padding/margins, adjust as needed */
-    min-height: 40px; /* Maintain a minimum height */
-    overflow-y: auto; /* Allow scrolling if content exceeds height */
+    width: 100%;
+    height: 100%; 
     line-height: 1.5;
-    white-space: pre-wrap;
-    align-self: flex-start; /* Align to the top */
-    transition: all 0.3s ease;
-    resize: none; /* Prevent manual resizing to maintain layout control */
-    padding: 10px; /* Add some internal padding for better usability */
+    align-self: flex-start;
+    padding: 10px;
+    border: none;
+    overflow: hidden; /* Added to disable scrollbar */
+    resize: none; /* Added to disable textarea resizing */
+    scrollbar-width: none; /* Hides scrollbar in Firefox */
+    -ms-overflow-style: none; /* Hides scrollbar in IE and Edge */
+}
+
+/* Hides scrollbar in Chrome, Safari, and Opera for #prompt-input */
+#prompt-input::-webkit-scrollbar {
+    display: none;
 }
 
 #prompt-input::placeholder {
     color: #999;
     font-style: italic;
-}
-
-/* Send Button */
-#send-button {
-    width: 32px;
-    height: 32px;
-    background: #000000; /* Black background for the button */
-    border-radius: 50%;
-    border: none;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    box-shadow: 0 2px 4px rgba(128, 128, 128, 0.2); /* Grey shadow */
-    transition: transform 0.2s, background 0.3s;
-}
-
-#send-button:hover {
-    background: #333;
-    transform: scale(1.1);
-}
-
-#send-button:active {
-    background: #555;
-    transform: scale(0.95);
-}
-
-#send-button:disabled {
-    background: #cccccc; /* Grayed-out background when disabled */
-    cursor: not-allowed;
-    box-shadow: none;
-}
-
-#send-button:disabled i {
-    color: #999; /* Grayed-out arrow when disabled */
-}
-
-#send-button i {
-    font-size: 16px;
-    color: #ffffff; /* White arrow */
 }
 
 /* ========================================================================= */
@@ -574,7 +525,6 @@ html, body {
     font-weight: bold; /* Bold text for emphasis */
 }
 
-
 #general-control .d-flex {
     gap: 15px; 
     padding-bottom: 40px;
@@ -630,4 +580,3 @@ html, body {
     box-shadow: 0px 0px 10px rgba(40, 167, 69, 0.8); /* Soft glow effect */
     transform: scale(1.05); /* Slightly enlarge for effect */
 }
-

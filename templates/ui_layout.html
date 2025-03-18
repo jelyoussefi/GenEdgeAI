@@ -36,7 +36,7 @@
                     </div>
                 </div>
                 <div class="chatbot-message">
-                    <div class="message-tools" id="message-tools"> 
+                    <div class="tools" id="message-tools"> 
                         <img src="{{ url_for('static', filename='images/processing.gif') }}" class="processing tool" style="display: none;" >
                         <img src="{{ url_for('static', filename='images/thinking.gif') }}" class="thinking tool"  style="display: none;">
                         <button id="copy-button" class="copy-button tool" title="Copy message" disabled> 
@@ -84,12 +84,12 @@
         </div>
         
         <hr class="separator">
-
         <div id="chatbot-prompt-container">   
-            <div class="prompt-inner">
-                <textarea id="prompt-input" placeholder="Ask me anything..." rows="1"></textarea>
-                <button id="send-button" disabled>
-                    <i class="fas fa-arrow-up"></i> 
+            <textarea id="prompt-input" placeholder="Ask me anything..." ></textarea>  
+            <div class="tools"> 
+                <img src="{{ url_for('static', filename='images/attach.png') }}" id="attach-button" class="tool" title="Attach file">
+                <button id="send-button" class="tool" title="Send message" disabled> <!-- Send button on the right -->
+                    <i class="fas fa-arrow-up"></i>
                 </button>
             </div>
         </div>
@@ -113,5 +113,4 @@
             </div>
         </div>
     </div>
-
 </div>
