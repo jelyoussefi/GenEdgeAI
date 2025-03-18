@@ -89,7 +89,7 @@ class ChatbotApp:
 		def home():
 			cpu_name = get_cpu_model().replace("Intel(R)", "").strip()
 			gpu_name = get_gpu_model().split("[")[0].replace("Intel Corporation", "").strip()		
-			devices = list_devices()
+			devices = ['CPU','GPU'];#list_devices()
 			default_device = devices[0]
 			default_model = self.models[0] 
 			default_precision = self.precisions[0]

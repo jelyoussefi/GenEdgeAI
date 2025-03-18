@@ -638,10 +638,10 @@ html, body {
     border-radius: 0.25rem;
     padding: 0.5rem 0;
     box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.175);
-    z-index: 1000;
     min-width: 200px;
     max-height: none; /* Remove height restriction to show all items */
     overflow-y: visible; /* Allow all items to be visible without scrollbar */
+    z-index: 10000; /* Increased z-index to ensure it stays on top */
 }
 
 /* Ensure the dropdown is visible when the 'show' class is added by Bootstrap */
