@@ -51,13 +51,12 @@ html, body {
     display: flex;
     flex-direction: row;
     align-items: center;
-    justify-content: space-between; /* Distributes space evenly, pushing logos to edges */
+    justify-content: space-between;
     width: 100%;
-    height: 100%;
     height: auto;
     margin-top: 20px;
     padding: 20px;
-    gap: 20px; /* Optional: Add spacing between elements if needed */
+    gap: 20px;
 }
 
 /* Centered content wrapper to group gauges and title */
@@ -68,24 +67,24 @@ html, body {
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-    gap: 20px; /* Space between gauges and title */
+    gap: 20px;
 }
 
 /* Header logo styling (ensure consistent sizing) */
 .header-logo {
-    height: 80px; /* Fixed height to match gauges for consistency */
+    height: 80px;
     width: auto;
     object-fit: contain;
-    max-width: 150px; /* Limit width to prevent overflow */
+    max-width: 150px;
 }
 
 /* Specific adjustments for Intel and OpenVINO logos */
 .left-logo {
-    margin-right: auto; /* Pushes the left logo to the far left */
+    margin-right: auto;
 }
 
 .right-logo {
-    margin-left: auto; /* Pushes the right logo to the far right */
+    margin-left: auto;
 }
 
 /* Gauge Containers */
@@ -94,7 +93,7 @@ html, body {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    height: 80px; /* Match the logo height for consistency */
+    height: 80px;
 }
 
 #cpuGauge, #powerGauge {
@@ -108,19 +107,19 @@ html, body {
 /* Responsive Design (Optional) */
 @media (max-width: 768px) {
     #sys-container {
-        flex-direction: column; /* Stack vertically on smaller screens */
+        flex-direction: column;
         justify-content: center;
-        gap: 20px; /* Increase spacing between stacked elements */
+        gap: 20px;
     }
 
     .header-logo, #cpuGauge, #powerGauge {
-        max-width: 100px; /* Reduce size on mobile */
-        height: 60px; /* Adjust height for mobile */
+        max-width: 100px;
+        height: 60px;
     }
 
     .centered-content {
         flex-direction: column;
-        gap: 10px; /* Reduce gap on mobile */
+        gap: 10px;
     }
 }
 
@@ -145,25 +144,25 @@ html, body {
     font-weight: bold;
     text-align: center;
     margin-top: 5px;
-    background: linear-gradient(90deg, #FFD700, #007BFF); /* Yellow to blue gradient */
-    background-size: 200%; /* Expand the gradient for centering effect */
-    background-position: center; /* Center the gradient */
-    -webkit-background-clip: text; /* Apply gradient only to the text */
-    color: transparent; /* Make the text transparent to show the gradient */
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3); /* Subtle shadow for depth */
+    background: linear-gradient(90deg, #FFD700, #007BFF);
+    background-size: 200%;
+    background-position: center;
+    -webkit-background-clip: text;
+    color: transparent;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
     letter-spacing: 1px;
     font-family: 'Arial', sans-serif;
-    padding: 5px 10px; /* Add padding for better spacing */
-    border-radius: 8px; /* Optional: Add rounded corners for better aesthetics */
-    display: inline-block; /* Keep it compact and centered */
+    padding: 5px 10px;
+    border-radius: 8px;
+    display: inline-block;
 }
 
 #cpuName {
-    font-size: 28px; /* Adjust size as needed */
+    font-size: 28px;
 }
 
 #gpuName {
-    font-size: 20px; /* Adjust size as needed */
+    font-size: 20px;
 }
 
 /* ========================================================================= */
@@ -177,12 +176,12 @@ html, body {
     flex-direction: column;
     align-items: center;
     overflow-y: auto;
-    height: 100%; /* Ensure it uses the full available height */
+    height: 100%;
 }
 
 /* Chat Bots Container and Layout */
 #chatbots {
-    height: 75%; /* Take 75% of #chatbots-container height */
+    height: 75%;
     width: 100%;
     display: inline-flex;
     flex-direction: row;
@@ -190,6 +189,7 @@ html, body {
     align-items: flex-start;
     position: relative;
     gap: 20px;
+    overflow: visible; /* Allow dropdown to extend beyond container boundaries */
 }
 
 /* Chat Bots Container and Layout */
@@ -204,33 +204,34 @@ html, body {
     background: transparent;
     border-radius: 8px;
     position: relative;
-    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.15), 0 2px 6px rgba(128, 128, 128, 0.2); /* Subtle grey shadow for a nice contour */
-    border: 4px solid rgba(0, 128, 0, 0.2); /* Light blue semi-transparent border for contour */
-    transition: box-shadow 0.3s ease, transform 0.2s ease; /* Smooth transition for hover effects */
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.15), 0 2px 6px rgba(128, 128, 128, 0.2);
+    border: 4px solid rgba(0, 128, 0, 0.2);
+    transition: box-shadow 0.3s ease, transform 0.2s ease;
     padding: 10px 20px;
+    overflow: visible; /* Prevent the chatbot from clipping the dropdown */
 }
 
 .chatbot:hover {
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2), 0 4px 8px rgba(128, 128, 128, 0.3); /* Enhanced shadow on hover */
-    transform: translateY(-2px); /* Slight lift on hover for a dynamic effect */
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2), 0 4px 8px rgba(128, 128, 128, 0.3);
+    transform: translateY(-2px);
 }
 
 /* Chat Bot Metrics (FPS and Latency Gauges) */
 .chatbot-metrics {
-    width: 100%; /* Full width of #chatbot-container */
-    height: auto; /* Automatic height based on content (gauges) */
-    display: flex; /* Ensure flex layout for horizontal alignment */
-    flex-direction: row; /* Align elements horizontally */
-    align-items: center; /* Center vertically within its height */
-    justify-content: space-between; /* Evenly distribute gauges uniformly with space between */
-    padding: 10px; /* Add horizontal padding for spacing, keep vertical at 10px */
+    width: 100%;
+    height: auto;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px;
     background: transparent;
-    overflow: hidden; /* Ensure no overflow from gauges */
+    overflow: hidden;
 }
 
 /* Ensure .message-content has relative positioning to contain the absolute button */
 .chatbot-message {
-    position: relative; /* Allows absolute positioning of the copy button  */
+    position: relative;
     width: 100%;
     height: 100%;
     max-width: 100%;
@@ -247,13 +248,13 @@ html, body {
 }
 
 #chatbot-control {
-    width: 95%; /* Match #chatbot-container width */
+    width: 95%;
     display: flex;
     flex-direction: row;
-    justify-content: space-between; /* First button to left, last to right */
+    justify-content: space-between;
     align-items: center;
-    margin: 10px; /* Keep some padding but remove button-specific margin */
-    gap: 0px; /* No extra space between buttons */
+    margin: 10px;
+    gap: 0px;
 }
 
 /* Message Tools Styling */
@@ -262,42 +263,42 @@ html, body {
     height: 36px;
     display: flex;
     flex-direction: row;
-    justify-content: center; /* Centers all items, but we’ll use margins and orders for specific positioning */
+    justify-content: center;
     align-items: center;
     margin-top: 10px;
     padding: 10px;
-    background: inherit; 
+    background: inherit;
 }
 
 #chatbot-prompt-container .tools {
-    justify-content: space-between; /* Pushes items to the edges */
+    justify-content: space-between;
     margin-bottom: 10px;
 }
 
 /* Ensure .processing (waiting) stays on the left when visible, but doesn’t affect other positioning */
 .processing {
-    order: -1; /* Forces .processing to the start (left) of the flex container when visible */
-    margin-right: auto; /* Pushes .processing to the left, allowing .thinking and .copy-button to position naturally */
+    order: -1;
+    margin-right: auto;
 }
 
 /* Ensure .thinking stays in the middle */
 .thinking {
-    order: 0; /* Keeps .thinking in the default position (center) when no other items shift it */
-    margin-left: auto; /* Pushes .thinking rightward to help center it, balanced by .copy-button */
-    margin-right: auto; /* Balances .thinking in the center, working with justify-content: center */
+    order: 0;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 /* Ensure .copy-button stays on the right */
 .copy-button {
-    order: 1; /* Places .copy-button at the end (right) of the flex container */
-    margin-left: auto; /* Pushes .copy-button to the right, ensuring it stays on the right edge */
+    order: 1;
+    margin-left: auto;
 }
 
 /* Waiting (Processing) and Thinking Images and Copy Button */
 .tool {
-    width: 36px; /* Same width and height for consistency */
+    width: 36px;
     height: 36px;
-    background: #f9f9f9; /* Match background for consistency */
+    background: #f9f9f9;
     border: 1px solid #e0e0e0;
     border-radius: 50%;
     display: flex;
@@ -335,24 +336,24 @@ html, body {
 
 /* Tool Button Specific Disabled States */
 .tool:disabled {
-    background: #cccccc; /* Grayed-out background */
+    background: #cccccc;
     cursor: not-allowed;
     box-shadow: none;
-    transform: none; /* Prevent scaling when disabled */
+    transform: none;
 }
 
 .tool:disabled:hover {
-    background: #cccccc; /* No change on hover when disabled */
+    background: #cccccc;
     transform: none;
 }
 
 .tool:disabled:active {
-    background: #cccccc; /* No change on click when disabled */
+    background: #cccccc;
     transform: none;
 }
 
 .tool:disabled i {
-    color: #999; /* Grayed-out icon */
+    color: #999;
 }
 
 .thinking-text {
@@ -370,18 +371,18 @@ html, body {
     color: #333;
     word-wrap: break-word;
     overflow-wrap: break-word;
-    height: auto; /* Height adjusts to content */
-    max-height: 100%; /* Ensures it respects the parent’s height */
+    height: auto;
+    max-height: 100%;
     display: flex;
     align-items: flex-start;
     flex-direction: column;
     text-align: left;
     line-height: 1.4;
-    white-space: pre-wrap; /* Preserves whitespace and wraps text */
+    white-space: pre-wrap;
     padding: 20px;
-    overflow-y: auto; /* Enables vertical scrolling */
-    scrollbar-width: none; /* Hides scrollbar in Firefox */
-    -ms-overflow-style: none; /* Hides scrollbar in IE and Edge */
+    overflow-y: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
 }
 
 /* Hides scrollbar in Chrome, Safari, and Opera */
@@ -391,7 +392,7 @@ html, body {
 
 /* Ensure focusability for keyboard navigation */
 .message-content:focus {
-    outline: none; /* Removes default focus outline */
+    outline: none;
 }
 
 .message-content strong {
@@ -400,17 +401,17 @@ html, body {
 
 /* Optional: Add justification if you prefer full justification instead of left-alignment */
 .message-content.justified {
-    text-align: justify; /* Use this class if you want full justification */
-    text-justify: inter-word; /* Ensures words are spaced evenly for justification */
+    text-align: justify;
+    text-justify: inter-word;
 }
 
 /* Chatbot Response Separator */
 .chatbot-response-separator {
-    height: 2px; /* Match the height of existing separators in the screenshot */
+    height: 2px;
     background: black;
-    border-radius: 1px; /* Match the slight rounding of other separators */
-    width: 100%; /* Full width within the message-content container */
-    opacity: 0.4; /* Fully opaque to match the solid look in the screenshot */
+    border-radius: 1px;
+    width: 100%;
+    opacity: 0.4;
     margin-bottom: 20px;
 }
 
@@ -428,30 +429,30 @@ html, body {
     border-radius: 12px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
     background: #ffffff;
-    position: relative; /* Added to match .chatbot-message */
-    transition: all 0.3s ease; /* Added to match .chatbot-message */
-    overflow: hidden; /* Added to disable scrollbar */
+    position: relative;
+    transition: all 0.3s ease;
+    overflow: hidden;
 }
 
 /* Chat Bot Prompt Saver */
 .chatbot-prompt-saver {
     width: 80%;
     max-width: 1280px;
-    height: 80px; /* Matches chatbot-prompt-inner width */
-    font-size: 14px; /* Smaller font size than chatbot-input (16px) */
-    font-family: 'Arial', sans-serif; /* Consistent font */
-    font-weight: 500; /* Match chatbot-input weight */
-    color: #333333; /* Darker text for contrast on a lighter background */
-    background: #d3d3d3; /* Light gray, even less dark than #666666 */
-    border: 1px solid #cccccc; /* Lighter border to match the new background */
-    border-radius: 8px; /* Slightly less rounded than container */
-    padding: 8px; /* Smaller padding for smaller space */
-    overflow-y: auto; /* Allow scrolling if content exceeds height */
-    text-align: left; /* Left-aligned text */
-    line-height: 1.4; /* Slightly tighter line spacing for smaller font */
-    white-space: pre-wrap; /* Preserve line breaks and spaces */
-    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05); /* Very light inner shadow */
-    margin-bottom: 10px; /* Retains the 10px spacing */
+    height: 80px;
+    font-size: 14px;
+    font-family: 'Arial', sans-serif;
+    font-weight: 500;
+    color: #333333;
+    background: #d3d3d3;
+    border: 1px solid #cccccc;
+    border-radius: 8px;
+    padding: 8px;
+    overflow-y: auto;
+    text-align: left;
+    line-height: 1.4;
+    white-space: pre-wrap;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05);
+    margin-bottom: 10px;
     font-style: italic;
 }
 
@@ -462,15 +463,15 @@ html, body {
     color: #333;
     background: transparent;
     width: 100%;
-    height: 100%; 
+    height: 100%;
     line-height: 1.5;
     align-self: flex-start;
     padding: 10px;
     border: none;
-    overflow: hidden; /* Added to disable scrollbar */
-    resize: none; /* Added to disable textarea resizing */
-    scrollbar-width: none; /* Hides scrollbar in Firefox */
-    -ms-overflow-style: none; /* Hides scrollbar in IE and Edge */
+    overflow: hidden;
+    resize: none;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
 }
 
 /* Hides scrollbar in Chrome, Safari, and Opera for #prompt-input */
@@ -497,10 +498,10 @@ html, body {
 /* Gauge Containers (FPS and Latency) */
 .gauge-container {
     display: flex;
-    flex-direction: column; /* Stack gauge on top, label below */
-    align-items: center; /* Center both gauge and label horizontally */
-    justify-content: center; /* Center vertically within the container (minimal effect here) */
-    background: transparent; /* Keep transparent background */
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
 }
 
 /* Gauge Styling */
@@ -508,9 +509,9 @@ html, body {
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 50%; /* Ensure circular appearance */
-    width: 80px; /* Match JavaScript initialization */
-    height: 80px; /* Match JavaScript initialization */
+    border-radius: 50%;
+    width: 80px;
+    height: 80px;
 }
 
 /* Generic Gauge Labels */
@@ -520,8 +521,8 @@ html, body {
     text-align: center;
     background: linear-gradient(90deg, #007bff, #0056b3);
     -webkit-background-clip: text;
-    color: transparent; /* Default gradient text */
-    text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.3); /* Subtle shadow */
+    color: transparent;
+    text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.3);
     letter-spacing: 1px;
     font-family: 'Arial', sans-serif;
 }
@@ -535,11 +536,11 @@ html, body {
 /* FPS and Latency Labels */
 .fps-label,
 .latency-label {
-    color: #333; /* Dark gray for visibility on white background */
+    color: #333;
     font-size: 14px;
     font-weight: bold;
     text-align: center;
-    text-shadow: none; /* Remove shadow for clean look on white background */
+    text-shadow: none;
 }
 
 [id^="fpsGauge"] .jqx-gauge-caption,
@@ -584,11 +585,11 @@ html, body {
     font-size: 16px;
     font-weight: bold;
     color: #ffffff;
-    background: linear-gradient(45deg, #0071c5, #00308f); /* Intel blue gradient, kept for consistency */
-    border: 2px solid #00308f; /* Darker Intel blue for border */
-    border-radius: 8px; /* Slight rounding */
+    background: linear-gradient(45deg, #0071c5, #00308f);
+    border: 2px solid #00308f;
+    border-radius: 8px;
     cursor: pointer;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1), 0 0 6px rgba(128, 128, 128, 0.2); /* Updated to grey shadow */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1), 0 0 6px rgba(128, 128, 128, 0.2);
     overflow: hidden;
     text-overflow: ellipsis;
     text-align: center;
@@ -596,15 +597,15 @@ html, body {
 }
 
 .custom-button:hover {
-    background: linear-gradient(45deg, #005eb8, #002d82); /* Darker gradient on hover */
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15), 0 0 8px rgba(128, 128, 128, 0.3); /* Enhanced grey shadow */
-    transform: translateY(-2px); /* Slight lift */
+    background: linear-gradient(45deg, #005eb8, #002d82);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15), 0 0 8px rgba(128, 128, 128, 0.3);
+    transform: translateY(-2px);
 }
 
 .custom-button:active {
-    background: linear-gradient(45deg, #00308f, #001e5f); /* Even darker when clicked */
+    background: linear-gradient(45deg, #00308f, #001e5f);
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    transform: translateY(1px); /* Slight press */
+    transform: translateY(1px);
 }
 
 /* ========================================================================= */
@@ -621,12 +622,12 @@ html, body {
 }
 
 [id^="deviceDropdown-"] {
-    color: red !important; /* Set text color to red */
-    font-weight: bold; /* Bold text for emphasis */
+    color: red !important;
+    font-weight: bold;
 }
 
 #general-control .d-flex {
-    gap: 15px; 
+    gap: 15px;
     padding-bottom: 40px;
 }
 
@@ -639,44 +640,68 @@ html, body {
     padding: 0.5rem 0;
     box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.175);
     min-width: 200px;
-    max-height: none; /* Remove height restriction to show all items */
-    overflow-y: visible; /* Allow all items to be visible without scrollbar */
-    z-index: 10000; /* Increased z-index to ensure it stays on top */
+    max-height: none;
+    overflow-y: auto;
+    z-index: 10000;
+    contain: none; /* Allow the dropdown to break out of parent constraints */
 }
 
-/* Ensure the dropdown is visible when the 'show' class is added by Bootstrap */
-.dropdown-menu.show {
-    display: block;
+/* Ensure the dropdown adjusts its position if it would be cut off */
+.dropdown {
+    position: relative;
+}
+
+/* Force the dropdown to be visible outside the parent container */
+.dropdown-menu {
+    z-index: 10000;
+    top: auto !important;
+    bottom: 100%;
+    transform: translateY(-10px);
+}
+
+/* Override the default Bootstrap behavior to show the dropdown below when there’s enough space */
+.dropdown.show .dropdown-menu {
+    top: 100% !important;
+    bottom: auto !important;
+    transform: translateY(0);
+}
+
+/* Adjust for cases where the dropdown would be cut off at the bottom */
+@media (max-height: 600px) {
+    .dropdown-menu {
+        max-height: 50vh;
+        overflow-y: auto;
+    }
 }
 
 /* Style the dropdown items to be larger and bold for all dropdowns */
 .dropdown-menu .dropdown-item {
-    font-size: 18px; /* Increase font size (default is usually 14px in Bootstrap) */
-    font-weight: bold; /* Make the text bold */
-    color: #333; /* Ensure readability with a dark color */
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
 }
 
 /* Optional: Add hover effect for better UX across all dropdowns */
 .dropdown-menu .dropdown-item:hover {
-    background-color: #f0f0f0; /* Light gray background on hover */
-    color: #007bff; /* Change text color on hover for emphasis */
+    background-color: #f0f0f0;
+    color: #007bff;
 }
 
 .dropdown-menu[data-type="prompt"] {
-    max-height: 300px; /* Limit dropdown height */
-    overflow-y: auto; /* Scroll if too many prompts */
+    max-height: 300px;
+    overflow-y: auto;
 }
 
 #multiDeviceToggle {
-    min-width: 180px; /* Ensures both buttons have a larger width */
-    padding: 10px 20px; /* Adds padding for better appearance */
-    text-align: center; /* Ensures text stays centered */
+    min-width: 180px;
+    padding: 10px 20px;
+    text-align: center;
 }
 
 /* Active Dashboard Button Style */
 #multiDeviceToggle.active {
-    background: linear-gradient(145deg, #28a745, #218838); /* Green Gradient */
+    background: linear-gradient(145deg, #28a745, #218838);
     border: 2px solid #218838;
-    box-shadow: 0px 0px 10px rgba(40, 167, 69, 0.8); /* Soft glow effect */
-    transform: scale(1.05); /* Slightly enlarge for effect */
+    box-shadow: 0px 0px 10px rgba(40, 167, 69, 0.8);
+    transform: scale(1.05);
 }
