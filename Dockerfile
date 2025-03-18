@@ -45,10 +45,11 @@ RUN wget -qO - https://repositories.intel.com/gpu/intel-graphics.key | \
 
 # Install NPU Driver
 WORKDIR /tmp
-RUN wget https://github.com/intel/linux-npu-driver/releases/download/v1.10.0/intel-driver-compiler-npu_1.10.0.20241107-11729849322_ubuntu24.04_amd64.deb \
-    https://github.com/intel/linux-npu-driver/releases/download/v1.10.0/intel-fw-npu_1.10.0.20241107-11729849322_ubuntu24.04_amd64.deb \
-    https://github.com/intel/linux-npu-driver/releases/download/v1.10.0/intel-level-zero-npu_1.10.0.20241107-11729849322_ubuntu24.04_amd64.deb && \
-    dpkg -i *.deb && rm -f *.deb
+RUN wget -qP /tmp \
+        https://github.com/intel/linux-npu-driver/releases/download/v1.13.0/intel-driver-compiler-npu_1.13.0.20250131-13074932693_ubuntu24.04_amd64.deb \
+        https://github.com/intel/linux-npu-driver/releases/download/v1.13.0/intel-fw-npu_1.13.0.20250131-13074932693_ubuntu24.04_amd64.deb \
+        https://github.com/intel/linux-npu-driver/releases/download/v1.13.0/intel-level-zero-npu_1.13.0.20250131-13074932693_ubuntu24.04_amd64.deb && \
+    dpkg -i /tmp/*.deb && rm -f /tmp/*.deb
 
 # Install PCM
 RUN git clone --recursive https://github.com/intel/pcm && \

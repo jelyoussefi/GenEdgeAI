@@ -29,9 +29,10 @@ class Chatbot:
 	def load_model(self):
 		try:
 			print(f"Chatbot {self.chatbot_id} loadeding model on {self.device}")
-			self.pipeline = openvino_genai.LLMPipeline(self.model_path, self.device)
+			pipeline_config = { "CACHE_DIR": ".npucache" }
+			self.pipeline = openvino_genai.LLMPipeline(self.model_path, self.device, pipeline_config)
 			self.config = openvino_genai.GenerationConfig()
-			self.config.max_new_tokens = 1000
+			self.config.max_new_tokens = 1000 # if self.device == "NPU" else 1000
 			print(f"Chatbot {self.chatbot_id} loaded model on {self.device}")
 		except Exception as e:
 			print(f"Error loading model for chatbot {self.chatbot_id}: {e}")
@@ -100,8 +101,9 @@ class Chatbot:
 	def run(self):
 		try:
 			with self.cv:
+				self.socketio.emit('chatbot_loading_model', {'chatbot_id': self.chatbot_id})
 				self.load_model()
-
+				self.socketio.emit('chatbot_model_loaded', {'chatbot_id': self.chatbot_id})
 
 			while self.running:
 				try:

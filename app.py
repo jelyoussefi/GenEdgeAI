@@ -58,7 +58,11 @@ class ChatbotApp:
 			if chatbot_id in self.chatbots and self.chatbots[chatbot_id].running:
 				return False
 			try:
-				model_path = os.path.join(self.models_dir, model_name, precision, model_name)
+				if device == "NPU":
+					model_path = os.path.join(self.models_dir, model_name, precision, "NPU", model_name)
+				else:
+					model_path = os.path.join(self.models_dir, model_name, precision, model_name)
+
 				chatbot = Chatbot(chatbot_id, device, model_path, self.socketio)
 				#chatbot.load_model(model_path, device)
 				self.chatbots[chatbot_id] = chatbot
@@ -89,9 +93,9 @@ class ChatbotApp:
 		def home():
 			cpu_name = get_cpu_model().replace("Intel(R)", "").strip()
 			gpu_name = get_gpu_model().split("[")[0].replace("Intel Corporation", "").strip()		
-			devices = ['CPU','GPU'];#list_devices()
-			default_device = devices[0]
-			default_model = self.models[0] 
+			devices = list_devices()
+			default_device = "NPU" #devices[0]
+			default_model = "TinyLlama-1.1B-Chat-v1.0" #self.models[0] 
 			default_precision = self.precisions[0]
 
 			return render_template(

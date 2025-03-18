@@ -35,13 +35,23 @@ for model in $MODELS; do
         mkdir -p "$output_dir" || { echo "Warning: Directory $output_dir may already exist or could not be created"; }
 
         # Check if model is already generated
-        if [ -d "$output_dir" ] && [ -f "$output_dir/openvino_model.bin" ]; then
-            continue  # Skip silently if output exists
-        else
+	if ! [ -d "$output_dir" ] || ! [ -f "$output_dir/openvino_model.bin" ]; then
             optimum-cli export openvino \
                 --model "$model" \
                 --task text-generation-with-past \
                 --group-size 64 \
+                --ratio 1.0 \
+                --weight-format "$precision_lower" \
+                --trust-remote-code "$output_dir" || { echo "Error: Failed to generate $model in $precision format"; exit 1; }
+        fi
+
+        output_dir="$OUTPUT_DIR/$model_name/$precision/NPU/$model_name"
+
+        if ! [ -d "$output_dir" ] || ! [ -f "$output_dir/openvino_model.bin" ]; then
+           optimum-cli export openvino \
+                --model "$model" \
+                --group-size 128 \
+                --sym \
                 --ratio 1.0 \
                 --weight-format "$precision_lower" \
                 --trust-remote-code "$output_dir" || { echo "Error: Failed to generate $model in $precision format"; exit 1; }

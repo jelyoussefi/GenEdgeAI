@@ -538,6 +538,7 @@
         $(document).ready(function () {
             cloneChatbots();
             initGauges();
+            updateGauges()
             const defaultChatbot = '{{ default_device }}'.toLowerCase();
             startChatbot(defaultChatbot);
             toggleSendButton();

@@ -53,7 +53,7 @@ build:
 	@mkdir -p -m 777 $(CACHE_DIR) 
 	@docker build ${DOCKER_BUILD_PARAMS}
 
-run: 	build
+run: 	models
 	@echo "🚀 Running Gen Edge AI demo..."
 	@docker run $(DOCKER_RUN_PARAMS) bash -c "python3 ./app.py --port $(PORT) --models_dir $(MODELS_DIR)"
 
