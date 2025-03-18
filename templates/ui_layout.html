@@ -1,23 +1,33 @@
 <!-- Main Container -->
 <div class="container d-flex flex-column align-items-center">
     <!-- Main Header Section -->
-    <div id="sys-container" class="d-flex align-items-center justify-content-between w-100">
-        <!-- CPU Gauge on the left -->
-        <div id="cpuGaugeContainer" class="d-flex flex-column align-items-center">
-            <div id="cpuGauge" class="gauge"></div>
-            <div class="gauge-label">CPU Usage (%)</div>
+    <div id="sys-container" class="d-flex align-items-center w-100">
+        <!-- Left Logo (Intel) -->
+        <img src="{{ url_for('static', filename='images/' + (custom_logo_image if custom_logo_image else 'intel_logo.png')) }}" class="header-logo left-logo">
+
+        <!-- Centered Content (Gauges and Title) -->
+        <div class="centered-content">
+            <!-- CPU Gauge on the left -->
+            <div id="cpuGaugeContainer" class="flex-column align-items-center">
+                <div id="cpuGauge" class="gauge"></div>
+                <div class="gauge-label">CPU Usage (%)</div>
+            </div>
+
+            <div id="titleContainer">
+                <h1 id="title">Gen Edge AI</h1>
+                <div id="cpuName" class="deviceName">{{ cpu_name }}</div>
+                <div id="gpuName" class="deviceName">{{ gpu_name }}</div>
+            </div>
+
+            <!-- Power Gauge on the right -->
+            <div id="powerGaugeContainer" class="flex-column align-items-center">
+                <div id="powerGauge" class="gauge"></div>
+                <div class="gauge-label">Power Use (W)</div>
+            </div>
         </div>
 
-        <div id="titleContainer">
-            <h1 id="title">Gen Edge AI</h1>
-            <div id="platformName">{{ platform_name }}</div>
-        </div>
-
-        <!-- Power Gauge on the right -->
-        <div id="powerGaugeContainer" class="d-flex flex-column align-items-center">
-            <div id="powerGauge" class="gauge"></div>
-            <div class="gauge-label">Power Use (W)</div>
-        </div>
+        <!-- Right Logo (OpenVINO) -->
+        <img src="{{ url_for('static', filename='images/' + ('intel_openvino_logo.png' if custom_logo_image else 'openvino_logo.png')) }}" class="header-logo right-logo">
     </div>
 
     <div id="chatbots-container" class="d-flex flex-column align-items-center">

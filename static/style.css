@@ -30,7 +30,7 @@ html, body {
     flex: 1;
 }
 
-/* Title and System Container Styling */
+/* Title styling for Vision Edge AI */
 #title {
     font-size: 52px;
     font-weight: bold;
@@ -49,12 +49,79 @@ html, body {
 
 #sys-container {
     display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between; /* Distributes space evenly, pushing logos to edges */
+    width: 100%;
+    height: 100%;
+    height: auto;
+    margin-top: 20px;
+    padding: 20px;
+    gap: 20px; /* Optional: Add spacing between elements if needed */
+}
+
+/* Centered content wrapper to group gauges and title */
+.centered-content {
+    width: 100%;
+    max-width: 1280px;
+    display: flex;
+    flex-direction: row;
     justify-content: space-between;
     align-items: center;
-    width: 100%;
-    margin-bottom: 5px;
-    max-width: 1280px;
-    margin-top: 40px;
+    gap: 20px; /* Space between gauges and title */
+}
+
+/* Header logo styling (ensure consistent sizing) */
+.header-logo {
+    height: 80px; /* Fixed height to match gauges for consistency */
+    width: auto;
+    object-fit: contain;
+    max-width: 150px; /* Limit width to prevent overflow */
+}
+
+/* Specific adjustments for Intel and OpenVINO logos */
+.left-logo {
+    margin-right: auto; /* Pushes the left logo to the far left */
+}
+
+.right-logo {
+    margin-left: auto; /* Pushes the right logo to the far right */
+}
+
+/* Gauge Containers */
+#cpuGaugeContainer, #powerGaugeContainer {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 80px; /* Match the logo height for consistency */
+}
+
+#cpuGauge, #powerGauge {
+    width: 80px;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Responsive Design (Optional) */
+@media (max-width: 768px) {
+    #sys-container {
+        flex-direction: column; /* Stack vertically on smaller screens */
+        justify-content: center;
+        gap: 20px; /* Increase spacing between stacked elements */
+    }
+
+    .header-logo, #cpuGauge, #powerGauge {
+        max-width: 100px; /* Reduce size on mobile */
+        height: 60px; /* Adjust height for mobile */
+    }
+
+    .centered-content {
+        flex-direction: column;
+        gap: 10px; /* Reduce gap on mobile */
+    }
 }
 
 /* Separator Styling */
@@ -64,6 +131,39 @@ html, body {
     border-radius: 2px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
     width: 100%;
+}
+
+/* Ensure title and platform name fit within the centered content */
+#titleContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.deviceName {
+    font-weight: bold;
+    text-align: center;
+    margin-top: 5px;
+    background: linear-gradient(90deg, #FFD700, #007BFF); /* Yellow to blue gradient */
+    background-size: 200%; /* Expand the gradient for centering effect */
+    background-position: center; /* Center the gradient */
+    -webkit-background-clip: text; /* Apply gradient only to the text */
+    color: transparent; /* Make the text transparent to show the gradient */
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3); /* Subtle shadow for depth */
+    letter-spacing: 1px;
+    font-family: 'Arial', sans-serif;
+    padding: 5px 10px; /* Add padding for better spacing */
+    border-radius: 8px; /* Optional: Add rounded corners for better aesthetics */
+    display: inline-block; /* Keep it compact and centered */
+}
+
+#cpuName {
+    font-size: 28px; /* Adjust size as needed */
+}
+
+#gpuName {
+    font-size: 20px; /* Adjust size as needed */
 }
 
 /* ========================================================================= */

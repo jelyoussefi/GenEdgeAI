@@ -9,7 +9,7 @@ from flask_socketio import SocketIO
 from threading import Thread, Lock, Condition
 from collections import deque
 from datetime import datetime, timedelta
-from utils.system_utils import get_power_consumption, get_gpu_model, list_devices
+from utils.system_utils import get_power_consumption, get_cpu_model, get_gpu_model, list_devices
 from utils.chatbot import Chatbot
 from utils.prompts import prompts
 
@@ -87,19 +87,22 @@ class ChatbotApp:
 
 		@app.route('/')
 		def home():
-			platform_name = get_gpu_model().split("[")[0].replace("Intel Corporation", "").strip()
-			devices = ["CPU", "GPU"] #list_devices()
+			cpu_name = get_cpu_model().replace("Intel(R)", "").strip()
+			gpu_name = get_gpu_model().split("[")[0].replace("Intel Corporation", "").strip()		
+			devices = list_devices()
 			default_device = devices[0]
 			default_model = self.models[0] 
 			default_precision = self.precisions[0]
+
 			return render_template(
 				'index.html',
 				devices=devices,
 				default_device=default_device,
 				default_precision=default_precision,
 				default_model=default_model,
-				platform_name=platform_name,
-				models=self.models,
+ 				cpu_name=cpu_name,
+                gpu_name=gpu_name,				
+                models=self.models,
 				precisions=self.precisions,
 				prompts=prompts
 			)

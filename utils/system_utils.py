@@ -1,3 +1,6 @@
+# Copyright (C) 2024 Intel Corporation
+# SPDX-License-Identifier: Apache-2.0
+
 import os
 import io
 import platform
@@ -11,7 +14,7 @@ def get_power_consumption():
 	proc_energy = 0.0
 	power_plane_0 = 0.0
 	power_plane_1 = 0.0
-	command = ['pcm', '/csv', '0.5', '-i=1']
+	command = ['/usr/local/sbin/pcm', '/csv', '0.5', '-i=1']
 	try:
 		result = subprocess.run(command, capture_output=True, text=True, timeout=60)
 		output = result.stdout
@@ -49,21 +52,30 @@ def get_power_consumption():
 
 
 def get_cpu_model():
-	try:
-		return platform.processor() or "Unknown CPU"
-	except Exception:
-		return "Unknown CPU"
-
+    """Return the CPU model."""
+    import platform
+    try:
+        cpu_model = platform.uname().processor or platform.processor()
+        if not cpu_model or cpu_model == "x86_64" and platform.system() == "Linux":
+            with open("/proc/cpuinfo", "r") as f:
+                for line in f:
+                    if "model name" in line:
+                        cpu_model = line.split(":")[1].strip()
+                        break
+        return cpu_model or ""
+    except Exception as e:
+        print(f"Error fetching CPU model: {e}")
+        return ""
 
 def get_gpu_model():
-	try:
-		result = subprocess.run(["lspci"], capture_output=True, text=True)
-		for line in result.stdout.splitlines():
-			if "VGA" in line or "3D controller" in line:
-				return line.split(": ")[-1].strip()
-		return "Unknown GPU"
-	except Exception:
-		return "Unknown GPU"
+    try:
+        result = subprocess.run(["lspci"], capture_output=True, text=True)
+        for line in result.stdout.splitlines():
+            if ("VGA" in line or "3D controller" in line) and "Intel Corporation" in line:
+                return line.split(": ")[-1].strip()
+        return ""
+    except Exception:
+        return "Unknown GPU"
 
 def list_devices():
 	ie = Core()
@@ -101,5 +113,4 @@ def list_cameras():
 	except Exception as e:
 		print(f"An error occurred while probing cameras: {e}")
 
-	print(video_devices)
 	return video_devices
