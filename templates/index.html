@@ -223,8 +223,6 @@
                     thinking: false,
                     new_prompt: true
                 });
-
-                toggleCopyButton(type); 
             });
         }
 
@@ -400,6 +398,9 @@
                 // Clear previous messages in all running chatbots
                 currentStateList.forEach(state => {
                     if (state.running) {
+                        if ( state.messages.length > 0 && state.messages[state.messages.length - 1].indexOf("copy-button") !== -1 ) {
+                            state.messages.pop()
+                        }
                         if (state.messages.length > 0) {
                             state.messages.push('<hr class="chatbot-response-separator">');
                         }
@@ -445,7 +446,6 @@
             let state = currentStateList.find(s => s.chatbot_id === chatbotId);
             processing.show()
             state.message = ''
-            toggleCopyButton(chatbotId); 
         })
 
         socket.on('chatbot_stream_stop', function(data) {
@@ -455,10 +455,8 @@
             let state = currentStateList.find(s => s.chatbot_id === chatbotId);
 
             processing.hide();
-
-            // Auto-scroll to the bottom of message-content
-            messageContent.scrollTop(messageContent[0].scrollHeight);
-            toggleCopyButton(chatbotId);
+            state.messages.push('<button id="copy-button" class="fas fa-copy tool"></button>')
+            updateMessage(state)
         });
 
         socket.on('chatbot_stream_message', function(data) {
@@ -510,7 +508,6 @@
             updateGaugeCaption(`#latencyGauge-${chatbotId}`, latency, initialCaptionConfigs(chatbotId).latency);
             updateGaugeCaption(`#fpsGauge-${chatbotId}`, throughput, initialCaptionConfigs(chatbotId).fps);
 
-            toggleCopyButton(chatbotId); 
         });
 
         socket.on('chatbot_ready', function(data) {
@@ -534,16 +531,6 @@
             Prism.highlightAll();
         }
 
-        /**
-         * Toggle the copy button state based on message content
-         * @param {string} chatbotId - ID of the chatbot
-         */
-        function toggleCopyButton(chatbotId) {
-            const messageContent = $(`#message-content-${chatbotId}`);
-            const copyButton = $(`#copy-button-${chatbotId}`);
-            const hasText = messageContent.text().trim().length > 0;
-            copyButton.prop('disabled', !hasText);
-        }
 
         $(document).on('click', '.copy-button', function() {
             const chatbotId = $(this).closest('.chatbot').attr('id');

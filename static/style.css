@@ -282,18 +282,12 @@ html, body {
     margin-right: auto;
 }
 
-/* Ensure .thinking stays in the middle */
-.thinking {
-    order: 0;
-    margin-left: auto;
-    margin-right: auto;
-}
-
 /* Ensure .copy-button stays on the right */
-.copy-button {
+.thinking  {
     order: 1;
     margin-left: auto;
 }
+
 
 /* Waiting (Processing) and Thinking Images and Copy Button */
 .tool {
@@ -309,6 +303,11 @@ html, body {
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
     transition: background 0.3s, transform 0.2s;
     z-index: 10;
+}
+
+#copy-button {
+    width: 28px;
+    height: 28px;
 }
 
 /* Ensure processing image scales properly */
@@ -378,11 +377,27 @@ html, body {
     text-align: left;
     line-height: 1.4;
     white-space: pre-wrap;
-    padding: 20px;
+    padding: 20px 20px 10px 20px; /* Reduce bottom padding to minimize gap */
     overflow-y: auto;
     overflow-x: visible; /* Ensure wrapped content is visible */
     scrollbar-width: none;
     -ms-overflow-style: none;
+    margin: 0; /* Reset any potential margin on the container */
+}
+
+/* Explicitly reset margins for paragraphs and ensure minimal spacing */
+.message-content p {
+    margin: 0; /* Completely remove margins to minimize spacing */
+    padding: 0; /* Remove any padding that might add spacing */
+}
+
+/* Ensure no extra spacing for the first and last paragraphs */
+.message-content p:first-child {
+    margin-top: 0;
+}
+
+.message-content p:last-child {
+    margin-bottom: 0;
 }
 
 /* Hides scrollbar in Chrome, Safari, and Opera */
@@ -404,6 +419,9 @@ html, body {
     text-align: justify;
     text-justify: inter-word;
 }
+
+
+
 
 /* Chatbot Response Separator */
 .chatbot-response-separator {
