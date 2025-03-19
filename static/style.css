@@ -245,6 +245,7 @@ html, body {
     justify-content: flex-start;
     transition: all 0.3s ease;
     overflow-y: auto;
+    overflow-x: visible; /* Allow horizontal content to be visible */
 }
 
 #chatbot-control {
@@ -373,14 +374,13 @@ html, body {
     overflow-wrap: break-word;
     height: auto;
     max-height: 100%;
-    display: flex;
-    align-items: flex-start;
-    flex-direction: column;
+    display: block; /* Changed from flex to block to avoid flex constraints */
     text-align: left;
     line-height: 1.4;
     white-space: pre-wrap;
     padding: 20px;
     overflow-y: auto;
+    overflow-x: visible; /* Ensure wrapped content is visible */
     scrollbar-width: none;
     -ms-overflow-style: none;
 }
@@ -435,10 +435,11 @@ html, body {
 }
 
 /* Chat Bot Prompt Saver */
-.chatbot-prompt-saver {
-    width: 80%;
-    max-width: 1280px;
-    height: 80px;
+.prompt-saver {
+    width: fit-content; /* Auto-fit to content width */
+    max-width: 80%; /* Prevent it from becoming too wide */
+    height: auto;
+    min-height: fit-content;
     font-size: 14px;
     font-family: 'Arial', sans-serif;
     font-weight: 500;
@@ -447,13 +448,76 @@ html, body {
     border: 1px solid #cccccc;
     border-radius: 8px;
     padding: 8px;
-    overflow-y: auto;
+    overflow-y: visible;
     text-align: left;
     line-height: 1.4;
     white-space: pre-wrap;
     box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05);
     margin-bottom: 10px;
     font-style: italic;
+    margin-left: auto; /* Align to the right */
+    display: block;
+}
+
+/* Syntax Highlighting for Python Code Blocks within .message-content */
+.message-content pre {
+    margin: 0;
+    padding: 0;
+    background: none;
+    border: none;
+    box-shadow: none;
+    border-radius: 0;
+    white-space: pre-wrap; /* Allow wrapping in the <pre> element */
+    overflow-x: visible; /* Ensure no horizontal scrollbar */
+    width: fit-content; /* Auto-fit to content width */
+    max-width: 100%; /* Prevent it from exceeding the parent width */
+}
+
+.message-content pre code.language-python {
+    display: block;
+    background: #2d2d2d; /* Dark background */
+    color: #d4d4d4; /* Light gray text */
+    font-family: 'Consolas', 'Monaco', monospace; /* Monospace font */
+    font-size: 14px;
+    line-height: 1.5;
+    padding: 16px;
+    border-radius: 4px;
+    border: none;
+    box-shadow: none;
+    white-space: pre-wrap; /* Allow text to wrap */
+    overflow-x: visible; /* Disable horizontal scrollbar */
+    width: fit-content; /* Auto-fit to content width */
+    max-width: 100%; /* Prevent it from exceeding the parent width */
+    box-sizing: border-box; /* Include padding in width calculation */
+}
+
+/* Syntax highlighting colors for Python */
+.message-content pre code.language-python .keyword {
+    color: #c792ea; /* Purple for keywords like def, if, else */
+}
+
+.message-content pre code.language-python .comment {
+    color: #6a9955; /* Greenish-gray for comments */
+}
+
+.message-content pre code.language-python .string {
+    color: #f78c6c; /* Orange for strings */
+}
+
+.message-content pre code.language-python .number {
+    color: #82aaff; /* Light blue for numbers */
+}
+
+.message-content pre code.language-python .function {
+    color: #dcdcaa; /* Yellowish for function names */
+}
+
+.message-content pre code.language-python .operator {
+    color: #d4d4d4; /* Same as base text for operators */
+}
+
+.message-content pre code.language-python .punctuation {
+    color: #d4d4d4; /* Same as base text for punctuation */
 }
 
 #prompt-input {

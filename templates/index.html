@@ -11,6 +11,10 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/css/bootstrap-datetimepicker.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <!-- Add Prism.js for syntax highlighting -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-dark.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 {% endblock %}
@@ -262,7 +266,6 @@
             }
         }
 
-
         /**
          * Get initial caption configurations for gauges
          * @param {string} chatbotId - ID of the chatbot
@@ -390,18 +393,21 @@
 
         $('#send-button').on('click', function () {
             const message = $('#prompt-input').val().trim();
-            if (message) {
-                console.log('Sending message:', message);
-                
-                // Save the prompt in chatbot-prompt-saver
-                $('.chatbot-prompt-saver').text(message);
-                
+            if (message) {                
                 $('#prompt-input').val(''); // Clear input after sending
                 toggleSendButton();
                 
                 // Clear previous messages in all running chatbots
                 currentStateList.forEach(state => {
                     if (state.running) {
+                        if (state.messages.length > 0) {
+                            state.messages.push('<hr class="chatbot-response-separator">');
+                        }
+                        state.messages.push(`<span class="prompt-saver"> ${message} </span>`)
+                        state.messages.push('')
+
+                        updateMessage(state)
+                        
                         $.ajax({
                             url: '/prompt_chatbot',
                             type: 'POST',
@@ -439,11 +445,6 @@
             let state = currentStateList.find(s => s.chatbot_id === chatbotId);
             processing.show()
             state.message = ''
-            if (state.messages.length > 0) {
-                let separator = marked.parse('<hr class="chatbot-response-separator">')
-                state.messages.push(separator);
-            }
-            state.messages.push('')
             toggleCopyButton(chatbotId); 
         })
 
@@ -477,7 +478,6 @@
                 state.messages.push('<span class="thinking-text">')
                 state.messages.push('')
                 state.message = ''
-
             }
             if (subword.includes('</think>')) {
                 state.thinking = false;
@@ -489,7 +489,7 @@
                 state.message = wrappedSubword = ''
             }
 
-            if ( wrappedSubword.length > 0 ) {
+            if (wrappedSubword.length > 0) {
                 state.message += wrappedSubword;
                 let formattedMessage = state.message 
 
@@ -503,14 +503,9 @@
                 state.messages[state.messages.length - 1] = marked.parse(formattedMessage)
             }
 
-            let html_msg = ""
-            state.messages.forEach( (parsed_msg) => {
-                html_msg += parsed_msg
-            })
-
-            messageContent.html(html_msg);
-            // Auto-scroll to the bottom of message-content
-            messageContent.scrollTop(messageContent[0].scrollHeight);
+            updateMessage(state)
+            // Highlight code blocks after rendering
+            Prism.highlightAll();
 
             updateGaugeCaption(`#latencyGauge-${chatbotId}`, latency, initialCaptionConfigs(chatbotId).latency);
             updateGaugeCaption(`#fpsGauge-${chatbotId}`, throughput, initialCaptionConfigs(chatbotId).fps);
@@ -518,11 +513,26 @@
             toggleCopyButton(chatbotId); 
         });
 
-       socket.on('chatbot_ready', function(data) {
+        socket.on('chatbot_ready', function(data) {
             const chatbotId = data.chatbot_id;
             const processing = $(`#message-tools-${chatbotId} .processing`);
             processing.hide()          
         })
+
+        function updateMessage(state) {
+            const messageContent = $(`#message-content-${state.chatbot_id}`);
+
+            let html_msg = ""
+            state.messages.forEach((parsed_msg) => {
+                html_msg += parsed_msg
+            })
+
+            messageContent.html(html_msg);
+            // Auto-scroll to the bottom of message-content
+            messageContent.scrollTop(messageContent[0].scrollHeight);
+            // Highlight code blocks after rendering
+            Prism.highlightAll();
+        }
 
         /**
          * Toggle the copy button state based on message content
