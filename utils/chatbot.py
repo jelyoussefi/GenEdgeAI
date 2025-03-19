@@ -101,9 +101,8 @@ class Chatbot:
 	def run(self):
 		try:
 			with self.cv:
-				self.socketio.emit('chatbot_loading_model', {'chatbot_id': self.chatbot_id})
 				self.load_model()
-				self.socketio.emit('chatbot_model_loaded', {'chatbot_id': self.chatbot_id})
+				self.socketio.emit('chatbot_ready', {'chatbot_id': self.chatbot_id})
 
 			while self.running:
 				try:
@@ -140,7 +139,6 @@ class Chatbot:
 					self.generating = False
 				
 		finally:
-			#self.pipeline.finish_chat()
 			self.running = False
 
 	def prompt(self, prompt):

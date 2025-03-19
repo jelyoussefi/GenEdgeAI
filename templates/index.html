@@ -85,7 +85,8 @@
         function startChatbot(chatbotId) {
             const state = currentStateList.find(s => s.chatbot_id === chatbotId);
             const element = state.selector;
-
+            const processing = $(`#message-tools-${chatbotId} .processing`);
+            
             if (state.running) {
                 console.log(`Chatbot ${chatbotId} is already running.`);
                 return;
@@ -94,6 +95,7 @@
             ['model', 'device', 'precision'].forEach(item => updateDropdownSelection(chatbotId, item));
 
             element.show();
+            processing.show();
 
             console.log(`Starting chatbot: ${chatbotId}`);
 
@@ -124,13 +126,15 @@
         function stopChatbot(chatbotId) {
             const state = currentStateList.find(s => s.chatbot_id === chatbotId);
             const element = state.selector;
-
+            const processing = $(`#message-tools-${chatbotId} .processing`);
+            
             if (!state.running) {
                 console.log(`Chatbot ${chatbotId} is not running.`);
                 return;
             }
 
             element.hide();
+            processing.hide();
 
             console.log(`Stopping chatbot: ${chatbotId}`);
 
@@ -156,6 +160,7 @@
         function updateChatbot(chatbotId, type, value) {
             const state = currentStateList.find(s => s.chatbot_id === chatbotId);
             const element = state.selector;
+            const processing = $(`#message-tools-${chatbotId} .processing`);
 
             if (!state.running) {
                 console.log(`Chatbot ${chatbotId} is not running.`);
@@ -163,6 +168,7 @@
             }
 
             element.show();
+            processing.show();
 
             console.log(`Updating player: ${chatbotId}`, type, value);
 
@@ -512,6 +518,11 @@
             toggleCopyButton(chatbotId); 
         });
 
+       socket.on('chatbot_ready', function(data) {
+            const chatbotId = data.chatbot_id;
+            const processing = $(`#message-tools-${chatbotId} .processing`);
+            processing.hide()          
+        })
 
         /**
          * Toggle the copy button state based on message content
