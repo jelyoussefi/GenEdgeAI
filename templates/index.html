@@ -438,7 +438,7 @@
 
         marked.use({
             sanitize: true, 
-            breaks: false,    // Ensure line breaks are preserved
+            breaks: true,    // Ensure line breaks are preserved
         });
 
         socket.on('chatbot_stream_start', function(data) {
