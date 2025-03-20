@@ -487,7 +487,7 @@
                 state.thinking = false;
                 wrappedSubword = subword.replace('</think>', '').trim();
                 state.message +=` ${wrappedSubword}`;
-                state.messages[state.messages.length - 1] = marked.parse(state.message)
+                state.messages[state.messages.length - 1] = state.message
                 state.messages.push('</span>')
                 state.messages.push('')
                 state.message = wrappedSubword = ''
@@ -504,7 +504,7 @@
                     thinking.hide();
                 }
                
-                state.messages[state.messages.length - 1] = marked.parse(formattedMessage)
+                state.messages[state.messages.length - 1] = formattedMessage
             }
 
             updateMessage(state)
@@ -526,7 +526,7 @@
             const messageContent = $(`#message-content-${state.chatbot_id}`);
             let html_msg = "";
             state.messages.forEach((parsed_msg) => {
-                html_msg += parsed_msg;
+                html_msg +=  marked.parse(parsed_msg);
             });
             
             messageContent.html(html_msg);
