@@ -246,6 +246,7 @@ html, body {
     transition: all 0.3s ease;
     overflow-y: auto;
     overflow-x: visible; /* Allow horizontal content to be visible */
+    padding-bottom: 10px;
 }
 
 #chatbot-control {
@@ -264,7 +265,7 @@ html, body {
     height: 36px;
     display: flex;
     flex-direction: row;
-    justify-content: center;
+    justify-content: space-between;
     align-items: center;
     margin-top: 10px;
     padding: 10px;
@@ -282,7 +283,6 @@ html, body {
     margin-right: auto;
 }
 
-/* Ensure .copy-button stays on the right */
 .thinking  {
     order: 1;
     margin-left: auto;
@@ -306,6 +306,8 @@ html, body {
 }
 
 #copy-button {
+    order: -1; 
+    margin-right: auto;
     width: 28px;
     height: 28px;
 }

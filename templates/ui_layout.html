@@ -45,12 +45,15 @@
                     </div>
                 </div>
                 <div class="chatbot-message">
-                    <div class="tools" id="message-tools"> 
+                    <div class="tools" id="message-info"> 
                         <img src="{{ url_for('static', filename='images/processing.gif') }}" class="processing tool" style="display: none;" >
                         <img src="{{ url_for('static', filename='images/thinking.gif') }}" class="thinking tool"  style="display: none;">
                     </div>
                     <div class="message-content" id="message-content" tabindex="0">
                         <!-- Generated chatbot message will be inserted here dynamically -->
+                    </div>
+                    <div class="tools" id="message-tools" style="display: none;"> 
+                       <button id="copy-button" class="copy-button tool" >  <i class="fas fa-copy"></i> </button>
                     </div>
                 </div>
                 <div id="chatbot-control" class="control mt-3">
