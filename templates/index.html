@@ -38,6 +38,7 @@
         const devicesList = {{ devices|tojson }}.map(device => device.toLowerCase());
         console.log(devicesList);
         const currentStateList = [];
+        let selectedFiles = [];
 
         /**
          * Initialize a gauge with custom configuration
@@ -174,13 +175,12 @@
 
             resetMessage(state)
             element.show();
-            processing.show();
 
             console.log(`Updating chatbot: ${chatbotId}`, type, value);
 
             if (state[type] !== value) {
                 state[type] = value;
-                
+                processing.show();
                 updateDropdownSelection(chatbotId, type);
 
                 $.ajax({
@@ -387,47 +387,11 @@
         // Send Message Functionality
         function toggleSendButton() {
             const message = $('#prompt-input').val().trim();
-            $('#send-button').prop('disabled', !message);
+            $('#send-button').prop('disabled', !message && selectedFiles.length == 0);
         }
 
         $('#prompt-input').on('input', toggleSendButton);
 
-        $('#send-button').on('click', function () {
-            const message = $('#prompt-input').val().trim();
-            if (message) {                
-                $('#prompt-input').val(''); // Clear input after sending
-                toggleSendButton();
-                
-                // Clear previous messages in all running chatbots
-                currentStateList.forEach(state => {
-                    if (state.running) {
-                        if ( state.messages.length > 0 && state.messages[state.messages.length - 1].indexOf("copy-button") !== -1 ) {
-                            state.messages.pop()
-                        }
-                        if (state.messages.length > 0) {
-                            state.messages.push('<hr class="chatbot-response-separator">');
-                        }
-                        state.messages.push(`<span class="prompt-saver"> ${message} </span>`)
-                        state.messages.push('')
-
-                        updateMessage(state)
-                        
-                        $.ajax({
-                            url: '/prompt_chatbot',
-                            type: 'POST',
-                            contentType: 'application/json',
-                            data: JSON.stringify({ chatbot_id: state.chatbot_id, prompt: message }),
-                            success: (response) => {
-                                console.log(`Prompt successfully sent to ${state.chatbot_id}`);
-                            },
-                            error: (xhr) => {
-                                console.error(`Failed to send prompt to ${state.chatbot_id}: ${xhr.responseText}`);
-                            }
-                        });
-                    }
-                });
-            }
-        });
 
         $('#prompt-input').on('keypress', function (e) {
             if (e.which === 13 && !e.shiftKey) { // Enter key without Shift
@@ -549,13 +513,126 @@
             updateMessage(state)
         }
 
-
         $(document).on('click', '.copy-button', function() {
             const chatbotId = $(this).closest('.chatbot').attr('id');
             let state = currentStateList.find(s => s.chatbot_id === chatbotId);
 
             if ( state.messages.length > 0 ) {
                 navigator.clipboard.writeText(state.messages[state.messages.length - 1] )
+            }
+        });
+
+        // Handle attach button click to trigger file input
+        $('#attach-button').on('click', function () {
+            $('#file-input').click(); // Trigger the hidden file input
+        });
+
+        // Handle file selection and display file names
+        $('#file-input').on('change', function () {
+            const fileInput = this;
+            const files = Array.from(fileInput.files); // Convert FileList to Array
+
+            // Add new files to the selectedFiles array (avoid duplicates)
+            files.forEach(file => {
+                if (!selectedFiles.some(f => f.name === file.name && f.size === file.size)) {
+                    selectedFiles.push(file);
+                }
+            });
+
+            // Update the display of attached file names
+            updateAttachedFilesDisplay();
+            toggleSendButton();
+        });
+
+        // Function to update the display of attached file names
+        function updateAttachedFilesDisplay() {
+            const container = $('#attached-files-container');
+            container.empty(); // Clear existing file names
+
+            selectedFiles.forEach((file, index) => {
+                const fileDiv = $(`
+                    <div class="attached-file" data-index="${index}">
+                        <span class="file-name">${file.name}</span>
+                        <span class="remove-file">&times;</span>
+                    </div>
+                `);
+                container.append(fileDiv);
+            });
+
+            // Show or hide the container based on whether there are files
+            if (selectedFiles.length > 0) {
+                container.show();
+            } else {
+                container.hide();
+            }
+        }
+
+        // Handle removing a file when clicking the 'x' on the file name
+        $(document).on('click', '.remove-file', function () {
+            const fileDiv = $(this).closest('.attached-file');
+            const index = parseInt(fileDiv.data('index'), 10);
+
+            // Remove the file from the selectedFiles array
+            selectedFiles.splice(index, 1);
+
+            // Update the display
+            updateAttachedFilesDisplay();
+        });
+
+        // Modify the send button click to clear attached files after sending
+        $('#send-button').on('click', function () {
+            const message = $('#prompt-input').val().trim();
+            if (message || selectedFiles.length > 0) {
+                $('#prompt-input').val(''); // Clear input after sending
+                toggleSendButton();
+
+                // Clear previous messages in all running chatbots
+                currentStateList.forEach(state => {
+                    if (state.running) {
+                        if (state.messages.length > 0 && state.messages[state.messages.length - 1].indexOf("copy-button") !== -1) {
+                            state.messages.pop();
+                        }
+                        if (state.messages.length > 0) {
+                            state.messages.push('<hr class="chatbot-response-separator">');
+                        }
+                        state.messages.push(`<span class="prompt-saver"> ${message} </span>`);
+                        if (selectedFiles.length > 0) {
+                            const fileNames = selectedFiles.map(file => file.name).join(', ');
+                            state.messages.push(`<span class="prompt-saver"> Attached: ${fileNames} </span>`);
+                        }
+                        state.messages.push('');
+
+                        updateMessage(state);
+
+                        // Send the message and files to the server
+                        const formData = new FormData();
+                        formData.append('chatbot_id', state.chatbot_id);
+                        formData.append('prompt', message);
+                        selectedFiles.forEach(file => {
+                            formData.append('files', file); // Use 'files' to handle multiple files
+                        });
+
+                        $.ajax({
+                            url: '/prompt_chatbot',
+                            type: 'POST',
+                            data: formData,
+                            processData: false, // Prevent jQuery from processing the data
+                            contentType: false, // Let the browser set the content type
+                            success: (response) => {
+                                console.log(`Prompt successfully sent to ${state.chatbot_id}`);
+                            },
+                            error: (xhr) => {
+                                console.error(`Failed to send prompt to ${state.chatbot_id}: ${xhr.responseText}`);
+                            }
+                        });
+                    }
+                });
+
+                // Clear the attached files after sending
+                selectedFiles = [];
+                updateAttachedFilesDisplay();
+                $('#file-input').val(''); // Clear the file input
+                toggleSendButton()
             }
         });
 

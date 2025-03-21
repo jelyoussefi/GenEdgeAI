@@ -94,10 +94,16 @@
         
         <hr class="separator">
         <div id="chatbot-prompt-container">   
-            <textarea id="prompt-input" placeholder="Ask me anything..." ></textarea>  
-            <div class="tools"> 
+            <textarea id="prompt-input" placeholder="Ask me anything..."></textarea>  
+            <div class="tools prompt-tools"> 
+                <!-- Attach button (always on the left) -->
                 <img src="{{ url_for('static', filename='images/attach.png') }}" id="attach-button" class="tool" title="Attach file">
-                <button id="send-button" class="tool" title="Send message" disabled> <!-- Send button on the right -->
+                <!-- Hidden file input -->
+                <input type="file" id="file-input" style="display: none;" multiple>
+                <!-- Container for attached file names -->
+                <div id="attached-files-container" class="attached-files"></div>
+                <!-- Send button (always on the right) -->
+                <button id="send-button" class="tool" title="Send message" disabled>
                     <i class="fas fa-arrow-up"></i>
                 </button>
             </div>
