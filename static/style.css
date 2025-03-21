@@ -246,7 +246,7 @@ html, body {
     transition: all 0.3s ease;
     overflow-y: auto;
     overflow-x: visible; /* Allow horizontal content to be visible */
-    padding-bottom: 10px;
+    padding: 15px;
 }
 
 #chatbot-control {
@@ -267,9 +267,6 @@ html, body {
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-    margin-top: 10px;
-    padding: 10px;
-    margin-bottom: 10px;
     background: inherit;
 }
 
@@ -284,6 +281,9 @@ html, body {
     margin-left: auto;
 }
 
+.message-info {
+    padding-bottom: 15px;
+}
 
 /* Waiting (Processing) and Thinking Images and Copy Button */
 .tool {
@@ -374,27 +374,12 @@ html, body {
     display: block; /* Changed from flex to block to avoid flex constraints */
     text-align: left;
     line-height: 1.6;
-    padding: 0 20px; /* Reduce bottom padding to minimize gap */
     overflow-y: auto;
     overflow-x: visible; /* Ensure wrapped content is visible */
     scrollbar-width: none;
     -ms-overflow-style: none;
-    margin: 0; /* Reset any potential margin on the container */
-}
-
-/* Explicitly reset margins for paragraphs and ensure minimal spacing */
-.message-content p {
-    margin: 0; /* Completely remove margins to minimize spacing */
-    padding: 0; /* Remove any padding that might add spacing */
-}
-
-/* Ensure no extra spacing for the first and last paragraphs */
-.message-content p:first-child {
-    margin-top: 0;
-}
-
-.message-content p:last-child {
-    margin-bottom: 0;
+    margin: 0;
+    margin: 0;
 }
 
 /* Hides scrollbar in Chrome, Safari, and Opera */
@@ -418,8 +403,6 @@ html, body {
 }
 
 
-
-
 /* Chatbot Response Separator */
 .chatbot-response-separator {
     height: 2px;
@@ -428,6 +411,7 @@ html, body {
     width: 100%;
     opacity: 0.4;
     margin-bottom: 20px;
+    margin-top: 20px;
 }
 
 #chatbot-prompt-container {
@@ -447,6 +431,7 @@ html, body {
     position: relative;
     transition: all 0.3s ease;
     overflow: hidden;
+    padding: 15px;
 }
 
 /* Chat Bot Prompt Saver */

@@ -552,11 +552,10 @@
 
         $(document).on('click', '.copy-button', function() {
             const chatbotId = $(this).closest('.chatbot').attr('id');
-            const messageContent = $(`#message-content-${chatbotId}`).text().trim();
-            if (messageContent) {
-                navigator.clipboard.writeText(messageContent)
-                    .then(() => console.log(`Copied text from ${chatbotId}`))
-                    .catch(err => console.error(`Failed to copy text from ${chatbotId}:`, err));
+            let state = currentStateList.find(s => s.chatbot_id === chatbotId);
+
+            if ( state.messages.length > 0 ) {
+                navigator.clipboard.writeText(state.messages[state.messages.length - 1] )
             }
         });
 
