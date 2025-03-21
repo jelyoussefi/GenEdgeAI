@@ -100,6 +100,7 @@
 
             element.show();
             processing.show();
+            resetMessage(state)
 
             console.log(`Starting chatbot: ${chatbotId}`);
 
@@ -171,10 +172,11 @@
                 return;
             }
 
+            resetMessage(state)
             element.show();
             processing.show();
 
-            console.log(`Updating player: ${chatbotId}`, type, value);
+            console.log(`Updating chatbot: ${chatbotId}`, type, value);
 
             if (state[type] !== value) {
                 state[type] = value;
@@ -454,14 +456,14 @@
 
         socket.on('chatbot_stream_stop', function(data) {
             const chatbotId = data.chatbot_id;
+            let state = currentStateList.find(s => s.chatbot_id === chatbotId);
             const processing = $(`#message-info-${chatbotId} .processing`);
             const messageContent = $(`#message-content-${chatbotId}`);
             const messageTools = $(`#message-tools-${chatbotId}`);
 
-            let state = currentStateList.find(s => s.chatbot_id === chatbotId);
-
             processing.hide();
             messageTools.show();
+            updateMessage(state)
         
         });
 
@@ -508,9 +510,7 @@
             }
 
             updateMessage(state)
-            // Highlight code blocks after rendering
-            Prism.highlightAll();
-
+          
             updateGaugeCaption(`#latencyGauge-${chatbotId}`, latency, initialCaptionConfigs(chatbotId).latency);
             updateGaugeCaption(`#fpsGauge-${chatbotId}`, throughput, initialCaptionConfigs(chatbotId).fps);
 
@@ -528,12 +528,27 @@
             state.messages.forEach((parsed_msg) => {
                 html_msg +=  marked.parse(parsed_msg);
             });
-            
+
             messageContent.html(html_msg);
-            messageContent.scrollTop(messageContent[0].scrollHeight);
+
+            if (!html_msg) {
+                const messageTools = $(`#message-tools-${state.chatbot_id}`);
+                messageContent.css('height', 'auto'); // Ensure minimal height
+                messageTools.hide(); // Hide tools when empty
+            } 
             
+            messageContent.scrollTop(messageContent[0].scrollHeight);
+
             Prism.highlightAll();
+            
         }
+
+        function resetMessage(state) {
+            state.messages = [];
+            state.message = ''
+            updateMessage(state)
+        }
+
 
         $(document).on('click', '.copy-button', function() {
             const chatbotId = $(this).closest('.chatbot').attr('id');

@@ -269,12 +269,8 @@ html, body {
     align-items: center;
     margin-top: 10px;
     padding: 10px;
-    background: inherit;
-}
-
-#chatbot-prompt-container .tools {
-    justify-content: space-between;
     margin-bottom: 10px;
+    background: inherit;
 }
 
 /* Ensure .processing (waiting) stays on the left when visible, but doesn’t affect other positioning */
@@ -377,9 +373,8 @@ html, body {
     max-height: 100%;
     display: block; /* Changed from flex to block to avoid flex constraints */
     text-align: left;
-    line-height: 1.4;
-    white-space: pre-wrap;
-    padding: 20px 20px 10px 20px; /* Reduce bottom padding to minimize gap */
+    line-height: 1.6;
+    padding: 0 20px; /* Reduce bottom padding to minimize gap */
     overflow-y: auto;
     overflow-x: visible; /* Ensure wrapped content is visible */
     scrollbar-width: none;
