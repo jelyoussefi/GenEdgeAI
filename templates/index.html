@@ -101,7 +101,7 @@
 
             element.show();
             processing.show();
-            resetMessage(state)
+            resetMessage(state);
 
             console.log(`Starting chatbot: ${chatbotId}`);
 
@@ -173,7 +173,7 @@
                 return;
             }
 
-            resetMessage(state)
+            resetMessage(state);
             element.show();
 
             console.log(`Updating chatbot: ${chatbotId}`, type, value);
@@ -224,7 +224,7 @@
                     message: "",
                     messages: [],
                     thinking: false,
-                    new_prompt: true
+                    processing: false
                 });
             });
         }
@@ -234,7 +234,6 @@
          * @param {string} chatbotId - ID of the chatbot
          * @param {string} type - Type of dropdown (model, device, precision)
          */
-       
         function updateDropdownSelection(chatbotId, type) {
             const state = currentStateList.find(s => s.chatbot_id === chatbotId);
             if (!state) {
@@ -359,39 +358,57 @@
                     if (state.running && index !== 0) {
                         stopChatbot(state.chatbot_id);
                     }
-                    updateDropdownSelection(state.chatbot_id, "device")
+                    updateDropdownSelection(state.chatbot_id, "device");
                 });
             }
             else {
-                let running_state = currentStateList[0]
+                let running_state = currentStateList[0];
                 currentStateList.forEach(state => {
                     if (state.running) {
-                        running_state = state
+                        running_state = state;
                     }
-                })
+                });
 
                 currentStateList.forEach((state, index) => {
                     if (state.running) {
-                        updateChatbot(state.chatbot_id, "device", state.chatbot_id.toUpperCase().replace(/-/g, '.'))
+                        updateChatbot(state.chatbot_id, "device", state.chatbot_id.toUpperCase().replace(/-/g, '.'));
                     }
                     else {
-                        const device = state.chatbot_id.toUpperCase().replace(/-/g, '.')
-                        currentStateList[index].model = running_state.model
-                        currentStateList[index].precision = running_state.precision
+                        const device = state.chatbot_id.toUpperCase().replace(/-/g, '.');
+                        currentStateList[index].model = running_state.model;
+                        currentStateList[index].precision = running_state.precision;
                         startChatbot(state.chatbot_id, false);
                     }
-                })
+                });
             }
         });
 
         // Send Message Functionality
         function toggleSendButton() {
-            const message = $('#prompt-input').val().trim();
-            $('#send-button').prop('disabled', !message && selectedFiles.length == 0);
+           
+            const sendButton = $('#send-button');
+            const sendIcon = $('#send-button i');
+
+            if (isProcessing()) {
+                sendIcon.removeClass('fa-arrow-up').addClass('fa-square');
+                sendButton.prop('disabled', false);
+            }
+            else {
+                sendIcon.removeClass('fa-square').addClass('fa-arrow-up');
+
+                const message = $('#prompt-input').val().trim();
+                const hasFiles = selectedFiles.length > 0;
+
+                if (message || hasFiles) {
+                    sendButton.prop('disabled', false);
+                } else {
+                    sendButton.prop('disabled', true);
+                }
+            }
+
         }
 
         $('#prompt-input').on('input', toggleSendButton);
-
 
         $('#prompt-input').on('keypress', function (e) {
             if (e.which === 13 && !e.shiftKey) { // Enter key without Shift
@@ -409,14 +426,18 @@
 
         socket.on('chatbot_stream_start', function(data) {
             const chatbotId = data.chatbot_id;
+            let state = currentStateList.find(s => s.chatbot_id === chatbotId);
             const processing = $(`#message-info-${chatbotId} .processing`);
             const messageTools = $(`#message-tools-${chatbotId}`);
 
-            let state = currentStateList.find(s => s.chatbot_id === chatbotId);
-            processing.show()
-            messageTools.hide()
-            state.message = ''
-        })
+            state.processing = true;
+            processing.show();
+            messageTools.hide();
+            state.message = '';
+
+            state.processing = true;
+            toggleSendButton()
+        });
 
         socket.on('chatbot_stream_stop', function(data) {
             const chatbotId = data.chatbot_id;
@@ -425,10 +446,13 @@
             const messageContent = $(`#message-content-${chatbotId}`);
             const messageTools = $(`#message-tools-${chatbotId}`);
 
+            state.processing = false;
             processing.hide();
             messageTools.show();
-            updateMessage(state)
-        
+            updateMessage(state);
+
+            // Revert the send button icon to arrow
+            toggleSendButton();
         });
 
         socket.on('chatbot_stream_message', function(data) {
@@ -445,23 +469,23 @@
             if (subword.includes('<think>')) {
                 state.thinking = true;
                 wrappedSubword = subword.replace('<think>', '').trim();
-                state.messages.push('<span class="thinking-text">')
-                state.messages.push('')
-                state.message = ''
+                state.messages.push('<span class="thinking-text">');
+                state.messages.push('');
+                state.message = '';
             }
             if (subword.includes('</think>')) {
                 state.thinking = false;
                 wrappedSubword = subword.replace('</think>', '').trim();
                 state.message +=` ${wrappedSubword}`;
-                state.messages[state.messages.length - 1] = state.message
-                state.messages.push('</span>')
-                state.messages.push('')
-                state.message = wrappedSubword = ''
+                state.messages[state.messages.length - 1] = state.message;
+                state.messages.push('</span>');
+                state.messages.push('');
+                state.message = wrappedSubword = '';
             }
 
             if (wrappedSubword.length > 0) {
                 state.message += wrappedSubword;
-                let formattedMessage = state.message 
+                let formattedMessage = state.message;
 
                 if (state.thinking) {
                     formattedMessage = state.message.replace(/\n/g, '<br>');
@@ -470,21 +494,20 @@
                     thinking.hide();
                 }
                
-                state.messages[state.messages.length - 1] = formattedMessage
+                state.messages[state.messages.length - 1] = formattedMessage;
             }
 
-            updateMessage(state)
+            updateMessage(state);
           
             updateGaugeCaption(`#latencyGauge-${chatbotId}`, latency, initialCaptionConfigs(chatbotId).latency);
             updateGaugeCaption(`#fpsGauge-${chatbotId}`, throughput, initialCaptionConfigs(chatbotId).fps);
-
         });
 
         socket.on('chatbot_ready', function(data) {
             const chatbotId = data.chatbot_id;
             const processing = $(`#message-info-${chatbotId} .processing`);
-            processing.hide()          
-        })
+            processing.hide();
+        });
 
         function updateMessage(state) {
             const messageContent = $(`#message-content-${state.chatbot_id}`);
@@ -504,21 +527,20 @@
             messageContent.scrollTop(messageContent[0].scrollHeight);
 
             Prism.highlightAll();
-            
         }
 
         function resetMessage(state) {
             state.messages = [];
-            state.message = ''
-            updateMessage(state)
+            state.message = '';
+            updateMessage(state);
         }
 
         $(document).on('click', '.copy-button', function() {
             const chatbotId = $(this).closest('.chatbot').attr('id');
             let state = currentStateList.find(s => s.chatbot_id === chatbotId);
 
-            if ( state.messages.length > 0 ) {
-                navigator.clipboard.writeText(state.messages[state.messages.length - 1] )
+            if (state.messages.length > 0) {
+                navigator.clipboard.writeText(state.messages[state.messages.length - 1]);
             }
         });
 
@@ -553,7 +575,7 @@
                 const fileDiv = $(`
                     <div class="attached-file" data-index="${index}">
                         <span class="file-name">${file.name}</span>
-                        <span class="remove-file">&times;</span>
+                        <span class="remove-file">×</span>
                     </div>
                 `);
                 container.append(fileDiv);
@@ -577,14 +599,53 @@
 
             // Update the display
             updateAttachedFilesDisplay();
+            toggleSendButton();
         });
 
-        // Modify the send button click to clear attached files after sending
+        // Function to cancel all running chatbots
+        function cancelAllChatbots() {
+            currentStateList.forEach(state => {
+                if (state.running) {
+                    $.ajax({
+                        url: '/cancel_chatbot',
+                        type: 'POST',
+                        contentType: 'application/json',
+                        data: JSON.stringify({ chatbot_id: state.chatbot_id }),
+                        success: (response) => {
+                            console.log(`Chatbot ${state.chatbot_id} canceled successfully: ${response.message}`);
+                        },
+                        error: (xhr) => {
+                            console.error(`Failed to cancel chatbot ${state.chatbot_id}: ${xhr.responseText}`);
+                        }
+                    });
+                    state.processing = false
+                }
+            });
+
+            toggleSendButton();
+        }
+
+        function isProcessing() {
+            let processing = false
+            currentStateList.forEach(state => {
+                if (state.processing) {
+                    processing = true;
+                }
+            })
+            return processing
+        }
+        // Modify the send button click to handle both sending and canceling
         $('#send-button').on('click', function () {
+            const sendIcon = $('#send-button i');
+
+            if (isProcessing()) {
+                cancelAllChatbots();
+                return;
+            }
+
             const message = $('#prompt-input').val().trim();
             if (message || selectedFiles.length > 0) {
                 $('#prompt-input').val(''); // Clear input after sending
-                toggleSendButton();
 
                 // Clear previous messages in all running chatbots
                 currentStateList.forEach(state => {
@@ -611,6 +672,8 @@
                         selectedFiles.forEach(file => {
                             formData.append('files', file); // Use 'files' to handle multiple files
                         });
+                        
+                        state.processing = true
 
                         $.ajax({
                             url: '/prompt_chatbot',
@@ -623,6 +686,7 @@
                             },
                             error: (xhr) => {
                                 console.error(`Failed to send prompt to ${state.chatbot_id}: ${xhr.responseText}`);
+                                state.processing = false
                             }
                         });
                     }
@@ -632,7 +696,9 @@
                 selectedFiles = [];
                 updateAttachedFilesDisplay();
                 $('#file-input').val(''); // Clear the file input
-                toggleSendButton()
+
+                toggleSendButton();
+
             }
         });
 
@@ -640,7 +706,7 @@
         $(document).ready(function () {
             cloneChatbots();
             initGauges();
-            updateGauges()
+            updateGauges();
             const defaultChatbot = '{{ default_device }}'.toLowerCase();
             startChatbot(defaultChatbot);
             toggleSendButton();

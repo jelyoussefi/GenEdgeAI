@@ -25,6 +25,7 @@ class Chatbot:
         self.latency_history = deque(maxlen=100)  # Latency in ms per token
         self.throughput_history = deque(maxlen=100)  # Throughput in tokens per second
         self.generating = False
+        self.canceling = False 
 
     def load_model(self):
         try:
@@ -71,6 +72,8 @@ class Chatbot:
 
         with self.cv:
             if self.generating:
+                if self.canceling:
+                    return StreamingStatus.STOP
                 return StreamingStatus.RUNNING
             else:
                 self.message_buffer = ''
@@ -80,6 +83,7 @@ class Chatbot:
         with self.cv:
             if not self.running:
                 self.running = True
+                self.canceling = False
                 self.thread = Thread(target=self.run)
                 self.thread.daemon = True
                 self.thread.start()
@@ -91,9 +95,20 @@ class Chatbot:
             if self.running:
                 self.running = False
                 self.generating = False
+                self.canceling = False
                 if self.thread and self.thread.is_alive():
                     self.thread.join()
                 self.queue.queue.clear()
+                self.cv.notify_all()
+                return True
+        return False
+
+    def cancel(self):
+        with self.cv:
+            if self.running:
+                self.canceling = True
+                while self.canceling:
+                    self.cv.wait(0.1)
                 self.cv.notify_all()
                 return True
         return False
@@ -137,6 +152,7 @@ class Chatbot:
                 
                 with self.cv:
                     self.generating = False
+                    self.canceling = False
                 
         finally:
             self.running = False
